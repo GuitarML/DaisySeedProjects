@@ -11,7 +11,8 @@
 //#include "Effect-Modules/metro_module.h"
 //#include "Effect-Modules/scope_module.h"
 //#include "Effect-Modules/crusher_module.h"
-#include "Effect-Modules/reverb_delay_module.h"
+//#include "Effect-Modules/reverb_delay_module.h"
+#include "Effect-Modules/neural_net_module.h"
 
 #include "UI/guitar_pedal_ui.h"
 #include "Util/audio_utilities.h"
@@ -478,11 +479,12 @@ int main(void)
     //availableEffects[2] = new AutoPanModule();
     //availableEffects[3] = new ChorusModule();
     //availableEffects[4] = new ChopperModule();
-    //availableEffects[1] = new MetroModule();
-    //availableEffects[2] = new ScopeModule();
-    //availableEffects[3] = new CrusherModule();
-    availableEffects[1] = new ReverbDelayModule();
-    
+    //availableEffects[5] = new MetroModule();
+    //availableEffects[6] = new ScopeModule();
+    //availableEffects[7] = new CrusherModule();
+    //availableEffects[1] = new ReverbDelayModule();
+    availableEffects[1] = new NeuralNetModule();
+
     for (int i = 0; i < availableEffectsCount; i++)
     {
         availableEffects[i]->Init(sample_rate);
