@@ -71,7 +71,7 @@ void CloudSeedModule::ProcessMono(float in)
 
     ins[0] = m_audioLeft;
 
-    reverb->Process(ins, outs, 48);
+    reverb->Process(ins, outs, 1);
    
     m_audioLeft = outs[0] * GetParameterAsMagnitude(1);
     m_audioRight = m_audioLeft;
