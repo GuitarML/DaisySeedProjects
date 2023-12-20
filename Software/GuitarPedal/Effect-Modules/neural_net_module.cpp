@@ -1,24 +1,27 @@
 #include "neural_net_module.h"
 #include "../Util/audio_utilities.h"
-#include "NeuralModels/model_data_gru9.h"
+#include "NeuralModels/model_data_gru12.h"
 
 using namespace bkshepherd;
 
-static const char* s_modelBinNames[9] = {"Fender57", "Matcheless", "Klon", "Mesa", "HAK", "Bassman", "5150", "Splawn", "Klon HighG"};
+static const char* s_modelBinNames[1] = {"Klon"};
 
-static const int s_paramCount = 3;
-static const ParameterMetaData s_metaData[s_paramCount] = {{name: "Gain", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 0, midiCCMapping: 20},
-                                                           {name: "Model", valueType: ParameterValueType::Binned, valueBinCount: 9, valueBinNames: s_modelBinNames, defaultValue: 0, knobMapping: 1, midiCCMapping: 23},
-                                                           {name: "Level", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 2, midiCCMapping: 21}};
+static const int s_paramCount = 4;
+static const ParameterMetaData s_metaData[s_paramCount] = {{name: "Gain", valueType: ParameterValueType::FloatMagnitude, defaultValue: 64, knobMapping: 0, midiCCMapping: 1},
+                                                           {name: "Mix", valueType: ParameterValueType::FloatMagnitude, defaultValue: 64, knobMapping: 1, midiCCMapping: 2},
+                                                           {name: "Level", valueType: ParameterValueType::FloatMagnitude, defaultValue: 64, knobMapping: 2, midiCCMapping: 3},
+                                                           {name: "Model", valueType: ParameterValueType::Binned, valueBinCount: 1, valueBinNames: s_modelBinNames, defaultValue: 0, knobMapping: -1, midiCCMapping: 20},
+};
 
 RTNeural::ModelT<float, 1, 1,
-    RTNeural::GRULayerT<float, 1, 9>,
-    RTNeural::DenseT<float, 9, 1>> model;
+    RTNeural::GRULayerT<float, 1, 12>,
+    RTNeural::DenseT<float, 12, 1>> model;
+// 12 is currently the max size GRU I was able to get working with OPT flag on, 13 froze it
 
 // Default Constructor
 NeuralNetModule::NeuralNetModule() : BaseEffectModule(),
                                                         m_gainMin(0.0f),
-                                                        m_gainMax(1.0f),
+                                                        m_gainMax(2.5f),
                                                         m_cachedEffectMagnitudeValue(1.0f)
 {
     // Set the name of the effect
@@ -42,31 +45,46 @@ void NeuralNetModule::Init(float sample_rate)
     BaseEffectModule::Init(sample_rate);
     setupWeights(); // in the model data .h file
     SelectModel();
+    CalculateMix();
 }
 
 void NeuralNetModule::ParameterChanged(int parameter_id)
 {
-    if (parameter_id == 1) {  // Delay Time
+    if (parameter_id == 3) {  // Change Model
         SelectModel();
-    } 
+    } else if (parameter_id == 1) {
+        CalculateMix();
+    }
 }
 
 void NeuralNetModule::SelectModel()
 {
     int modelIndex = GetParameterAsBinnedValue(1) - 1;
-    //int modelIndex = 4;
-    //modelIndex = modelIndex_temp;
     auto& gru = (model).template get<0>();
     auto& dense = (model).template get<1>();
-    //modelInSize = 1;
     gru.setWVals(model_collection[modelIndex].rec_weight_ih_l0);
     gru.setUVals(model_collection[modelIndex].rec_weight_hh_l0);
     gru.setBVals(model_collection[modelIndex].rec_bias);
     dense.setWeights(model_collection[modelIndex].lin_weight);
     dense.setBias(model_collection[modelIndex].lin_bias.data());
     model.reset();
+    nnLevelAdjust = model_collection[modelIndex].levelAdjust;
+}
 
-    //nnLevelAdjust = model_collection[modelIndex].levelAdjust;
+void NeuralNetModule::CalculateMix()
+{
+    //    A computationally cheap mostly energy constant crossfade from SignalSmith Blog
+    //    https://signalsmith-audio.co.uk/writing/2021/cheap-energy-crossfade/
+
+    float mixKnob = GetParameterAsMagnitude(1);
+    float x2 = 1.0 - mixKnob;
+    float A = mixKnob*x2;
+    float B = A * (1.0 + 1.4186 * A);
+    float C = B + mixKnob;
+    float D = B + x2;
+
+    wetMix = C * C;
+    dryMix = D * D;
 }
 
 void NeuralNetModule::ProcessMono(float in)
@@ -75,15 +93,13 @@ void NeuralNetModule::ProcessMono(float in)
 
     float ampOut;
     float input_arr[1] = { 0.0 };    // Neural Net Input
-    //float input = in;
-    input_arr[0] = m_audioLeft * GetParameterAsMagnitude(0);
+    input_arr[0] = m_audioLeft * (m_gainMin + (m_gainMax - m_gainMin) * GetParameterAsMagnitude(0));
 
 
     // Process Neural Net Model //
     ampOut = model.forward (input_arr) + input_arr[0];   // Run Model and add Skip Connection
-    //ampOut *= nnLevelAdjust;
 
-    m_audioLeft = ampOut * GetParameterAsMagnitude(2);
+    m_audioLeft = (ampOut * nnLevelAdjust * wetMix + input_arr[0] * dryMix) * GetParameterAsMagnitude(2); // Applies model level adjustment, wet/dry mix, and output level
     m_audioRight = m_audioLeft;
 }
 
@@ -92,12 +108,14 @@ void NeuralNetModule::ProcessStereo(float inL, float inR)
     // Calculate the mono effect
     ProcessMono(inL);
 
+    // NOTE: Running the Neural Nets in stereo is currently not feasible due to processing limitations, this will remain a MONO ONLY effect for now.
+    //       The left channel output is copied to the right output, but the right input is ignored in this effect module.
+
     // Do the base stereo calculation (which resets the right signal to be the inputR instead of combined mono)
     //BaseEffectModule::ProcessStereo(m_audioLeft, inR);
     
-    //m_audioRight = m_audioLeft;  // Currently only processing mono for neural net, probably can't keep up with stereo in realtime with gru9 models
+    //m_audioRight = m_audioLeft;
     
-
     // Use the same magnitude as already calculated for the Left Audio
     //m_audioRight = m_audioRight * m_cachedEffectMagnitudeValue;
 }

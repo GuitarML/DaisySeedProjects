@@ -13,9 +13,6 @@
 
 using namespace daisysp;
 
-//RTNeural::ModelT<float, 1, 1,
-//    RTNeural::GRULayerT<float, 1, 9>,
-//    RTNeural::DenseT<float, 9, 1>> model;
 
 namespace bkshepherd
 {
@@ -29,6 +26,7 @@ class NeuralNetModule : public BaseEffectModule
     void Init(float sample_rate) override;
     void ParameterChanged(int parameter_id) override;
     void SelectModel();
+    void CalculateMix();
     void ProcessMono(float in) override;
     void ProcessStereo(float inL, float inR) override;
     float GetBrightnessForLED(int led_id) override;
@@ -38,6 +36,11 @@ class NeuralNetModule : public BaseEffectModule
 
     float m_gainMin;
     float m_gainMax;
+
+    float wetMix;
+    float dryMix;
+
+    float nnLevelAdjust;
 
     float m_cachedEffectMagnitudeValue;
 };
