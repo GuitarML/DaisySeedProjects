@@ -15,15 +15,16 @@ static const ParameterMetaData s_metaData[s_paramCount] = {{name: "Gain", valueT
 };
 
 RTNeural::ModelT<float, 1, 1,
-    RTNeural::GRULayerT<float, 1, 12>,
-    RTNeural::DenseT<float, 12, 1>> model;
+    RTNeural::GRULayerT<float, 1, 11>,
+    RTNeural::DenseT<float, 11, 1>> model;
 // 12 is currently the max size GRU I was able to get working with OPT flag on, 13 froze it
+// 11 seems to be more practical, can add a few quality of life features
 
 // Default Constructor
 NeuralNetModule::NeuralNetModule() : BaseEffectModule(),
                                                         m_gainMin(0.0f),
-                                                        m_gainMax(2.5f),
-                                                        m_toneFreqMin(600.0f),
+                                                        m_gainMax(2.0f),
+                                                        m_toneFreqMin(400.0f),
                                                         m_toneFreqMax(20000.0f),
                                                         m_cachedEffectMagnitudeValue(1.0f)
 {
@@ -49,6 +50,9 @@ void NeuralNetModule::Init(float sample_rate)
     setupWeights(); // in the model data .h file
     SelectModel();
     CalculateMix();
+    tone.Init(sample_rate);
+    bal.Init(sample_rate);
+    CalculateTone();
 }
 
 void NeuralNetModule::ParameterChanged(int parameter_id)
@@ -116,7 +120,7 @@ void NeuralNetModule::ProcessMono(float in)
     float balanced_out = bal.Process(filter_out, ampOut); // Apply level adjustment to increase level of filtered signal
 
 
-    m_audioLeft = (balanced_out * wetMix + input_arr[0] * dryMix) * GetParameterAsMagnitude(2); // Applies model level adjustment, wet/dry mix, and output level
+    m_audioLeft = (balanced_out * wetMix) * GetParameterAsMagnitude(2) / 4.0 + input_arr[0] * dryMix; // Applies model level adjustment, wet/dry mix, and output level
     m_audioRight = m_audioLeft;
 }
 
