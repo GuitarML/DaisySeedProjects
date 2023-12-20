@@ -6,10 +6,11 @@ using namespace bkshepherd;
 
 static const char* s_modelBinNames[1] = {"Klon"};
 
-static const int s_paramCount = 4;
+static const int s_paramCount = 5;
 static const ParameterMetaData s_metaData[s_paramCount] = {{name: "Gain", valueType: ParameterValueType::FloatMagnitude, defaultValue: 64, knobMapping: 0, midiCCMapping: 1},
                                                            {name: "Mix", valueType: ParameterValueType::FloatMagnitude, defaultValue: 64, knobMapping: 1, midiCCMapping: 2},
                                                            {name: "Level", valueType: ParameterValueType::FloatMagnitude, defaultValue: 64, knobMapping: 2, midiCCMapping: 3},
+                                                           {name: "Tone", valueType: ParameterValueType::FloatMagnitude, valueBinCount: 0, defaultValue: 64, knobMapping: 3, midiCCMapping: 4},
                                                            {name: "Model", valueType: ParameterValueType::Binned, valueBinCount: 1, valueBinNames: s_modelBinNames, defaultValue: 0, knobMapping: -1, midiCCMapping: 20},
 };
 
@@ -22,6 +23,8 @@ RTNeural::ModelT<float, 1, 1,
 NeuralNetModule::NeuralNetModule() : BaseEffectModule(),
                                                         m_gainMin(0.0f),
                                                         m_gainMax(2.5f),
+                                                        m_toneFreqMin(600.0f),
+                                                        m_toneFreqMax(20000.0f),
                                                         m_cachedEffectMagnitudeValue(1.0f)
 {
     // Set the name of the effect
@@ -50,13 +53,14 @@ void NeuralNetModule::Init(float sample_rate)
 
 void NeuralNetModule::ParameterChanged(int parameter_id)
 {
-    if (parameter_id == 3) {  // Change Model
+    if (parameter_id == 4) {  // Change Model
         SelectModel();
     } else if (parameter_id == 1) {
         CalculateMix();
+    } else if (parameter_id == 3) {
+        CalculateTone();
     }
 }
-
 void NeuralNetModule::SelectModel()
 {
     int modelIndex = GetParameterAsBinnedValue(1) - 1;
@@ -87,6 +91,13 @@ void NeuralNetModule::CalculateMix()
     dryMix = D * D;
 }
 
+void NeuralNetModule::CalculateTone()
+{
+    // Set low pass filter as exponential taper 
+    tone.SetFreq(m_toneFreqMin + GetParameterAsMagnitude(3) * GetParameterAsMagnitude(3) * (m_toneFreqMax - m_toneFreqMin)); 
+}
+
+
 void NeuralNetModule::ProcessMono(float in)
 {
     BaseEffectModule::ProcessMono(in);
@@ -98,8 +109,14 @@ void NeuralNetModule::ProcessMono(float in)
 
     // Process Neural Net Model //
     ampOut = model.forward (input_arr) + input_arr[0];   // Run Model and add Skip Connection
+    ampOut *= nnLevelAdjust;
 
-    m_audioLeft = (ampOut * nnLevelAdjust * wetMix + input_arr[0] * dryMix) * GetParameterAsMagnitude(2); // Applies model level adjustment, wet/dry mix, and output level
+    // TONE //
+    float filter_out = tone.Process(ampOut);  // Apply tone Low Pass filter
+    float balanced_out = bal.Process(filter_out, ampOut); // Apply level adjustment to increase level of filtered signal
+
+
+    m_audioLeft = (balanced_out * wetMix + input_arr[0] * dryMix) * GetParameterAsMagnitude(2); // Applies model level adjustment, wet/dry mix, and output level
     m_audioRight = m_audioLeft;
 }
 
