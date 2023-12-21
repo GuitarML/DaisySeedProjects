@@ -4,14 +4,14 @@
 
 using namespace bkshepherd;
 
-static const char* s_modelBinNames[4] = {"Klon", "Fender57", "TS9", "Bassman"};
+static const char* s_modelBinNames[5] = {"Klon", "Fender57", "TS9", "Bassman", "5150 amp"};
 
 static const int s_paramCount = 5;
 static const ParameterMetaData s_metaData[s_paramCount] = {{name: "Gain", valueType: ParameterValueType::FloatMagnitude, defaultValue: 64, knobMapping: 0, midiCCMapping: 1},
                                                            {name: "Mix", valueType: ParameterValueType::FloatMagnitude, defaultValue: 64, knobMapping: 1, midiCCMapping: 2},
                                                            {name: "Level", valueType: ParameterValueType::FloatMagnitude, defaultValue: 64, knobMapping: 2, midiCCMapping: 3},
                                                            {name: "Tone", valueType: ParameterValueType::FloatMagnitude, valueBinCount: 0, defaultValue: 64, knobMapping: 3, midiCCMapping: 4},
-                                                           {name: "Model", valueType: ParameterValueType::Binned, valueBinCount: 1, valueBinNames: s_modelBinNames, defaultValue: 0, knobMapping: -1, midiCCMapping: 20},
+                                                           {name: "Model", valueType: ParameterValueType::Binned, valueBinCount: 5, valueBinNames: s_modelBinNames, defaultValue: 0, knobMapping: -1, midiCCMapping: 20},
 };
 
 RTNeural::ModelT<float, 1, 1,
@@ -67,7 +67,7 @@ void NeuralNetModule::ParameterChanged(int parameter_id)
 }
 void NeuralNetModule::SelectModel()
 {
-    int modelIndex = GetParameterAsBinnedValue(1) - 1;
+    int modelIndex = GetParameterAsBinnedValue(4) - 1;
     auto& gru = (model).template get<0>();
     auto& dense = (model).template get<1>();
     gru.setWVals(model_collection[modelIndex].rec_weight_ih_l0);
