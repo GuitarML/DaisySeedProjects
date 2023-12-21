@@ -3,9 +3,9 @@
 #define GUITAR_PEDAL_STORAGE_H
 
 // Peristant Storage Settings
-#define SETTINGS_FILE_FORMAT_VERSION 2
+#define SETTINGS_FILE_FORMAT_VERSION 3
 #define SETTINGS_MAX_EFFECT_COUNT 8
-#define SETTINGS_MAX_EFFECT_PARAM_COUNT 40
+#define SETTINGS_MAX_EFFECT_PARAM_COUNT 42
 
 // Save System Variables
 struct Settings

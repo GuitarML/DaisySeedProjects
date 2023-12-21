@@ -22,7 +22,7 @@ using namespace bkshepherd;
 
 static const char* s_presetNames[8] = {"FChorus", "DullEchos", "Hyperplane", "MedSpace", "Hallway", "RubiKa", "SmallRoom", "90s"};
 
-static const int s_paramCount = 39;
+static const int s_paramCount = 41;
 static const ParameterMetaData s_metaData[s_paramCount] = {{name: "DryOut", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 0, midiCCMapping: 1},
                                                            {name: "EarlyOut", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 1, midiCCMapping: 2},
                                                            {name: "MainOut", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 2, midiCCMapping: 3},
@@ -72,7 +72,12 @@ static const ParameterMetaData s_metaData[s_paramCount] = {{name: "DryOut", valu
                                                   /*36*/         {name: "PreDelOut", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: -1, midiCCMapping: 37},
 
                                                   /*37*/         {name: "L StageTap", valueType: ParameterValueType::Bool, valueBinCount: 0, defaultValue: 1, knobMapping: -1, midiCCMapping: 38},
-                                                  /*38*/         {name: "Interp", valueType: ParameterValueType::Bool, valueBinCount: 0, defaultValue: 1, knobMapping: -1, midiCCMapping: 39}
+                                                  /*38*/         {name: "Interp", valueType: ParameterValueType::Bool, valueBinCount: 0, defaultValue: 1, knobMapping: -1, midiCCMapping: 39},
+                                                  
+                                                  /*39*/         {name: "Sum2Mono", valueType: ParameterValueType::Bool, valueBinCount: 0, defaultValue: 1, knobMapping: -1, midiCCMapping: 40},
+                                                  /*40*/         {name: "InputMix", valueType: ParameterValueType::FloatMagnitude, defaultValue: 0, knobMapping: -1, midiCCMapping: 41}
+
+
 
 };
 
@@ -240,6 +245,8 @@ void CloudSeedModule::ParameterChanged(int parameter_id)
 
     } else if (parameter_id == 38) {  // Interpolation
         reverb->SetParameter(::Parameter2::Interpolation, GetParameterAsBool(38));
+    } else if (parameter_id == 40) {  // InputMix
+        reverb->SetParameter(::Parameter2::InputMix, GetParameterAsMagnitude(40));
     }
 }
 
@@ -283,8 +290,14 @@ void CloudSeedModule::ProcessMono(float in)
 
     reverb->Process(inL, inR, outL, outR, 1);
 
-    m_audioLeft = outL[0];
-    m_audioRight = outR[0];
+    if (GetParameterAsBool(39)) { // If "Sum2Mono" is on, combine L and R signals and half the level
+        m_audioLeft = (outL[0] + outR[0]) / 2.0;
+        m_audioRight = m_audioLeft;    
+    } else {
+        m_audioLeft = outL[0];
+        m_audioRight = outR[0];        
+    }
+
 }
 
 void CloudSeedModule::ProcessStereo(float inL, float inR)
