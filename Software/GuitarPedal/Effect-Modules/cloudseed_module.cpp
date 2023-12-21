@@ -57,7 +57,7 @@ void CloudSeedModule::Init(float sample_rate)
     reverb = new CloudSeed::ReverbController(sample_rate);
     reverb->ClearBuffers();
     reverb->initFactoryChorus();
-    reverb->SetParameter(::Parameter2::LineCount, 4);
+    reverb->SetParameter(::Parameter2::LineCount, 2); // 2 on factory chorus for stereo is max, 3 froze it
 }
 
 
@@ -66,15 +66,18 @@ void CloudSeedModule::ProcessMono(float in)
     BaseEffectModule::ProcessMono(in);
 
     
-    float ins[1];
-    float outs[1];
+    float inL[1];
+    float outL[1];
+    float inR[1];
+    float outR[1];
 
-    ins[0] = m_audioLeft;
+    inL[0] = m_audioLeft;
+    inR[0] = m_audioRight;
 
-    reverb->Process(ins, outs, 1);
+    reverb->Process(inL, inR, outL, outR, 1);
    
-    m_audioLeft = outs[0] * GetParameterAsMagnitude(1);
-    m_audioRight = m_audioLeft;
+    m_audioLeft = outL[0] * GetParameterAsMagnitude(1);
+    m_audioRight = outR[0] * GetParameterAsMagnitude(1);
 }
 
 void CloudSeedModule::ProcessStereo(float inL, float inR)
@@ -83,9 +86,9 @@ void CloudSeedModule::ProcessStereo(float inL, float inR)
     ProcessMono(inL);
 
     // Do the base stereo calculation (which resets the right signal to be the inputR instead of combined mono)
-    BaseEffectModule::ProcessStereo(m_audioLeft, inR);
+    //BaseEffectModule::ProcessStereo(m_audioLeft, inR);
     
-    m_audioRight = m_audioLeft;  
+    //m_audioRight = m_audioLeft;  
     
 
     // Use the same magnitude as already calculated for the Left Audio

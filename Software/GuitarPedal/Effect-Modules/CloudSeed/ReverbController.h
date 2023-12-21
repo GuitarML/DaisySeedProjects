@@ -24,17 +24,17 @@ namespace CloudSeed
 		int samplerate;
 
 		ReverbChannel channelL;
-		//ReverbChannel channelR;
+		ReverbChannel channelR;
 		float leftChannelIn[bufferSize];
-		//float rightChannelIn[bufferSize];
+		float rightChannelIn[bufferSize];
 		float leftLineBuffer[bufferSize];
-		//float rightLineBuffer[bufferSize];
+		float rightLineBuffer[bufferSize];
 		float parameters[(int)Parameter2::Count];
 
 	public:
 		ReverbController(int samplerate)
 			: channelL(bufferSize, samplerate, ChannelLR::Left)
-			//, channelR(bufferSize, samplerate, ChannelLR::Right)
+			, channelR(bufferSize, samplerate, ChannelLR::Right)
 		{
 			this->samplerate = samplerate;
 			initFactoryChorus();
@@ -582,7 +582,7 @@ namespace CloudSeed
 			this->samplerate = samplerate;
 
 			channelL.SetSamplerate(samplerate);
-			//channelR.SetSamplerate(samplerate);
+			channelR.SetSamplerate(samplerate);
 		}
 
 		int GetParameterCount()
@@ -680,7 +680,7 @@ namespace CloudSeed
 			auto scaled = GetScaledParameter(param);
 			
 			channelL.SetParameter(param, scaled);
-			//channelR.SetParameter(param, scaled);
+			channelR.SetParameter(param, scaled);
 		}
 
 		
@@ -688,31 +688,33 @@ namespace CloudSeed
 		void ClearBuffers()
 		{
 			channelL.ClearBuffers();
-			//channelR.ClearBuffers();
+			channelR.ClearBuffers();
 		}
 
-		void Process(float* input, float* output, int bufferSize)
+		void Process(float* inputL, float* inputR, float* outputL, float* outputR, int bufferSize)
 		{
 			auto len = bufferSize;
-			//auto cm = GetScaledParameter(Parameter2::InputMix) * 0.5; // Removing L/R mixing for Mono Terrarium
-			//auto cmi = (1 - cm);                                     // Removing L/R mixing for Mono Terrarium
+			auto cm = GetScaledParameter(Parameter2::InputMix) * 0.5; 
+			auto cmi = (1 - cm);                                   
 
 			for (int i = 0; i < len; i++)
 			{
-				//leftChannelIn[i] = input[i *2] // * cmi + input[i*2+1] * cm;
-                leftChannelIn[i] = input[i];                        // Removing L/R mixing for Mono Terrarium
+				//leftChannelIn[i] = input[i *2] // * cmi + input[i*2+1] * cm;  // TODO Fix mixing
+                leftChannelIn[i] = inputL[i] * cmi + inputR[i] * cm;                      // Removing L/R mixing for Mono Terrarium
+				rightChannelIn[i] = inputR[i] * cmi + inputL[i] * cm;  
 				//rightChannelIn[i] = input[i*2+1] * cmi + input[i*2] * cm;
 			}
 
 			channelL.Process(leftChannelIn, len);
-			//channelR.Process(rightChannelIn, len);
+			channelR.Process(rightChannelIn, len);
 			auto leftOut = channelL.GetOutput();
-			//auto rightOut = channelR.GetOutput();
+			auto rightOut = channelR.GetOutput();
 
 			for (int i = 0; i < len; i++)
 			{
 				//output[i*2] = leftOut[i];
-                output[i] = leftOut[i];
+                outputL[i] = leftOut[i];
+				outputR[i] = rightOut[i];
 				//output[i*2+1] = rightOut[i];
 			}
 		}
