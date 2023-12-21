@@ -107,7 +107,7 @@ namespace CloudSeed
 
 		}
 
-                /*
+
 		void initFactoryDullEchos()
 		{
 			//parameters from Dull Echos in
@@ -161,7 +161,7 @@ namespace CloudSeed
 
 			for (auto value = 0; value < (int)Parameter2::Count; value++)
 			{
-				SetParameter((Parameter)value, parameters[value]);
+				SetParameter((Parameter2)value, parameters[value]);
 			}
 
 		}
@@ -180,14 +180,14 @@ namespace CloudSeed
 			parameters[(int)Parameter2::TapGain] = 1.0;
 			parameters[(int)Parameter2::TapDecay] = 1.0;
 			parameters[(int)Parameter2::DiffusionEnabled] = 1.0;
-			parameters[(int)Parameter2::DiffusionStages] = 0.4285714328289032;
+			parameters[(int)Parameter2::DiffusionStages] = 0.285714328289032;    //KAB modified for Daisy Seed,
 			parameters[(int)Parameter2::DiffusionDelay] = 0.27500024437904358;
 			parameters[(int)Parameter2::DiffusionFeedback] = 0.660000205039978;
 			//parameters[(int)Parameter2::LineCount] = 0.72727274894714355;
 			parameters[(int)Parameter2::LineDelay] = 0.22500017285346985;
 			parameters[(int)Parameter2::LineDecay] = 0.794999897480011;
 			parameters[(int)Parameter2::LateDiffusionEnabled] = 1.0;
-			parameters[(int)Parameter2::LateDiffusionStages] = 1.0;
+			parameters[(int)Parameter2::LateDiffusionStages] = 0.5;                  //KAB modified for Daisy Seed, was 1.0
 			parameters[(int)Parameter2::LateDiffusionDelay] = 0.22999951243400574;
 			parameters[(int)Parameter2::LateDiffusionFeedback] = 0.59499990940093994;
 			parameters[(int)Parameter2::PostLowShelfGain] = 0.95999979972839355;
@@ -220,7 +220,7 @@ namespace CloudSeed
 
 			for (auto value = 0; value < (int)Parameter2::Count; value++)
 			{
-				SetParameter((Parameter)value, parameters[value]);
+				SetParameter((Parameter2)value, parameters[value]);
 			}
 
 		}
@@ -233,19 +233,19 @@ namespace CloudSeed
 			parameters[(int)Parameter2::PreDelay] = 0.0;
 			parameters[(int)Parameter2::HighPass] = 0.0;
 			parameters[(int)Parameter2::LowPass] = 0.63999992609024048;
-			parameters[(int)Parameter2::TapCount] = 0.51999980211257935;
+			parameters[(int)Parameter2::TapCount] = 0.3;       // KAB Modified for daisy seed
 			parameters[(int)Parameter2::TapLength] = 0.26499992609024048;
 			parameters[(int)Parameter2::TapGain] = 0.69499999284744263;
 			parameters[(int)Parameter2::TapDecay] = 1.0;
 			parameters[(int)Parameter2::DiffusionEnabled] = 1.0;
-			parameters[(int)Parameter2::DiffusionStages] = 0.8571428656578064;
+			parameters[(int)Parameter2::DiffusionStages] = 0.3;            // KAB Modified for daisy seed
 			parameters[(int)Parameter2::DiffusionDelay] = 0.5700000524520874;
 			parameters[(int)Parameter2::DiffusionFeedback] = 0.76000010967254639;
 			//parameters[(int)Parameter2::LineCount] = 0.18181818723678589;
 			parameters[(int)Parameter2::LineDelay] = 0.585000216960907;
 			parameters[(int)Parameter2::LineDecay] = 0.29499980807304382;
 			parameters[(int)Parameter2::LateDiffusionEnabled] = 1.0;
-			parameters[(int)Parameter2::LateDiffusionStages] = 0.57142859697341919;
+			parameters[(int)Parameter2::LateDiffusionStages] = 0.3;   // KAB Modified for daisy seed
 			parameters[(int)Parameter2::LateDiffusionDelay] = 0.69499951601028442;
 			parameters[(int)Parameter2::LateDiffusionFeedback] = 0.71499985456466675;
 			parameters[(int)Parameter2::PostLowShelfGain] = 0.87999987602233887;
@@ -278,7 +278,7 @@ namespace CloudSeed
 
 			for (auto value = 0; value < (int)Parameter2::Count; value++)
 			{
-				SetParameter((Parameter)value, parameters[value]);
+				SetParameter((Parameter2)value, parameters[value]);
 			}
 
 		}
@@ -291,7 +291,7 @@ namespace CloudSeed
 			parameters[(int)Parameter2::PreDelay] = 0.0;
 			parameters[(int)Parameter2::HighPass] = 0.0;
 			parameters[(int)Parameter2::LowPass] = 0.60999995470047;
-			parameters[(int)Parameter2::TapCount] = 1.0;
+			parameters[(int)Parameter2::TapCount] = .4;
 			parameters[(int)Parameter2::TapLength] = 1.0;
 			parameters[(int)Parameter2::TapGain] = 0.0;
 			parameters[(int)Parameter2::TapDecay] = 0.830000102519989;
@@ -336,7 +336,7 @@ namespace CloudSeed
 
 			for (auto value = 0; value < (int)Parameter2::Count; value++)
 			{
-				SetParameter((Parameter)value, parameters[value]);
+				SetParameter((Parameter2)value, parameters[value]);
 			}
 
 		}
@@ -349,19 +349,19 @@ namespace CloudSeed
 			parameters[(int)Parameter2::PreDelay] = 0.0;
 			parameters[(int)Parameter2::HighPass] = 0.0;
 			parameters[(int)Parameter2::LowPass] = 0.8899998664855957;
-			parameters[(int)Parameter2::TapCount] = 0.51999980211257935;
+			parameters[(int)Parameter2::TapCount] = 0.3;
 			parameters[(int)Parameter2::TapLength] = 1.0;
 			parameters[(int)Parameter2::TapGain] = 0.90000003576278687;
 			parameters[(int)Parameter2::TapDecay] = 1.0;
 			parameters[(int)Parameter2::DiffusionEnabled] = 1.0;
-			parameters[(int)Parameter2::DiffusionStages] = 0.8571428656578064;
+			parameters[(int)Parameter2::DiffusionStages] = 0.3;
 			parameters[(int)Parameter2::DiffusionDelay] = 0.5700000524520874;
 			parameters[(int)Parameter2::DiffusionFeedback] = 0.76000010967254639;
 			//parameters[(int)Parameter2::LineCount] = 0.27272728085517883;
 			parameters[(int)Parameter2::LineDelay] = 0.68500018119812012;
 			parameters[(int)Parameter2::LineDecay] = 0.82999974489212036;
-			parameters[(int)Parameter2::LateDiffusionEnabled] = 1.0;
-			parameters[(int)Parameter2::LateDiffusionStages] = 0.71428573131561279;
+			parameters[(int)Parameter2::LateDiffusionEnabled] = .5;
+			parameters[(int)Parameter2::LateDiffusionStages] = 0.4;
 			parameters[(int)Parameter2::LateDiffusionDelay] = 0.69499951601028442;
 			parameters[(int)Parameter2::LateDiffusionFeedback] = 0.71499985456466675;
 			parameters[(int)Parameter2::PostLowShelfGain] = 0.87999987602233887;
@@ -394,7 +394,7 @@ namespace CloudSeed
 
 			for (auto value = 0; value < (int)Parameter2::Count; value++)
 			{
-				SetParameter((Parameter)value, parameters[value]);
+				SetParameter((Parameter2)value, parameters[value]);
 			}
 
 		}
@@ -452,7 +452,7 @@ namespace CloudSeed
 			parameters[(int)Parameter2::Interpolation] = 1.0;
 			for (auto value = 0; value < (int)Parameter2::Count; value++)
 			{
-				SetParameter((Parameter)value, parameters[value]);
+				SetParameter((Parameter2)value, parameters[value]);
 			}
 
 		}
@@ -509,7 +509,7 @@ namespace CloudSeed
 			parameters[(int)Parameter2::Interpolation] = 1;
 			for (auto value = 0; value < (int)Parameter2::Count; value++)
 			{
-				SetParameter((Parameter)value, parameters[value]);
+				SetParameter((Parameter2)value, parameters[value]);
 			}
 
 		}
@@ -566,11 +566,11 @@ namespace CloudSeed
 			parameters[(int)Parameter2::Interpolation] = 1.0;
 			for (auto value = 0; value < (int)Parameter2::Count; value++)
 			{
-				SetParameter((Parameter)value, parameters[value]);
+				SetParameter((Parameter2)value, parameters[value]);
 			}
 
 		}
-                */
+
 
 		int GetSamplerate()
 		{

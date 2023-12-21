@@ -20,10 +20,14 @@ void* custom_pool_allocate(size_t size)
 
 using namespace bkshepherd;
 
+static const char* s_presetNames[8] = {"FChorus", "DullEchos", "Hyperplane", "MedSpace", "Hallway", "RubiKa", "SmallRoom", "90s"};
 
-static const int s_paramCount = 2;
-static const ParameterMetaData s_metaData[s_paramCount] = {{name: "Gain", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 1, midiCCMapping: 20},
-                                                           {name: "Level", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 2, midiCCMapping: 21}};
+static const int s_paramCount = 5;
+static const ParameterMetaData s_metaData[s_paramCount] = {{name: "DryOut", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 0, midiCCMapping: 1},
+                                                           {name: "EarlyOut", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 1, midiCCMapping: 2},
+                                                           {name: "MainOut", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 2, midiCCMapping: 3},
+                                                           {name: "Time", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 3, midiCCMapping: 4},
+                                                           {name: "Preset", valueType: ParameterValueType::Binned, valueBinCount: 8, valueBinNames: s_presetNames, defaultValue: 0, knobMapping: -1, midiCCMapping: 50}};
 
 // Default Constructor
 CloudSeedModule::CloudSeedModule() : BaseEffectModule(),
@@ -60,6 +64,46 @@ void CloudSeedModule::Init(float sample_rate)
     reverb->SetParameter(::Parameter2::LineCount, 2); // 2 on factory chorus for stereo is max, 3 froze it
 }
 
+void CloudSeedModule::ParameterChanged(int parameter_id)
+{
+    if (parameter_id == 4) {  // Preset
+        changePreset();
+    } else if (parameter_id == 0) {  // DryOut
+        reverb->SetParameter(::Parameter2::DryOut, GetParameterAsMagnitude(0));
+    } else if (parameter_id == 1) {  // EarlyOut
+        reverb->SetParameter(::Parameter2::EarlyOut, GetParameterAsMagnitude(1));
+    } else if (parameter_id == 2) {  // MainOut
+        reverb->SetParameter(::Parameter2::MainOut, GetParameterAsMagnitude(2));
+    } else if (parameter_id == 3) {  // TimeOut
+        reverb->SetParameter(::Parameter2::LineDecay, GetParameterAsMagnitude(3));
+    } 
+
+}
+
+void CloudSeedModule::changePreset()
+{
+    int c = (GetParameterAsBinnedValue(4) - 1);
+    reverb->ClearBuffers();
+        
+    if ( c == 0 ) {
+            reverb->initFactoryChorus();
+    } else if ( c == 1 ) {
+            reverb->initFactoryDullEchos();
+    } else if ( c == 2 ) {
+            reverb->initFactoryHyperplane();
+    } else if ( c == 3 ) {
+            reverb->initFactoryMediumSpace();
+    } else if ( c == 4 ) {
+            reverb->initFactoryNoiseInTheHallway();
+    } else if ( c == 5 ) {
+            reverb->initFactoryRubiKaFields();
+    } else if ( c == 6 ) {
+            reverb->initFactorySmallRoom();
+    } else if ( c == 7 ) {
+            reverb->initFactory90sAreBack();
+    }
+}
+
 
 void CloudSeedModule::ProcessMono(float in)
 {
@@ -76,8 +120,8 @@ void CloudSeedModule::ProcessMono(float in)
 
     reverb->Process(inL, inR, outL, outR, 1);
    
-    m_audioLeft = outL[0] * GetParameterAsMagnitude(1);
-    m_audioRight = outR[0] * GetParameterAsMagnitude(1);
+    m_audioLeft = outL[0];
+    m_audioRight = outR[0];
 }
 
 void CloudSeedModule::ProcessStereo(float inL, float inR)
