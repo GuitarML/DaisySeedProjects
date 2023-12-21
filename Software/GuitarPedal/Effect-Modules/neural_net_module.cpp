@@ -1,10 +1,10 @@
 #include "neural_net_module.h"
 #include "../Util/audio_utilities.h"
-#include "NeuralModels/model_data_gru12.h"
+#include "NeuralModels/model_data_gru11.h"
 
 using namespace bkshepherd;
 
-static const char* s_modelBinNames[1] = {"Klon"};
+static const char* s_modelBinNames[4] = {"Klon", "Fender57", "TS9", "Bassman"};
 
 static const int s_paramCount = 5;
 static const ParameterMetaData s_metaData[s_paramCount] = {{name: "Gain", valueType: ParameterValueType::FloatMagnitude, defaultValue: 64, knobMapping: 0, midiCCMapping: 1},
