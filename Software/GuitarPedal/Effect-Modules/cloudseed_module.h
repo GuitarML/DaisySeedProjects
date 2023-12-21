@@ -37,6 +37,7 @@ class CloudSeedModule : public BaseEffectModule
     void changePreset();
     void ProcessMono(float in) override;
     void ProcessStereo(float inL, float inR) override;
+    void SetTempo(uint32_t bpm) override;
     float GetBrightnessForLED(int led_id) override;
 
   private:
