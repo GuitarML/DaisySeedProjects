@@ -22,13 +22,13 @@ using namespace bkshepherd;
 
 static const char* s_presetNames[8] = {"FChorus", "DullEchos", "Hyperplane", "MedSpace", "Hallway", "RubiKa", "SmallRoom", "90s"};
 
-static const int s_paramCount = 41;
-static const ParameterMetaData s_metaData[s_paramCount] = {{name: "DryOut", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 0, midiCCMapping: 1},
+static const int s_paramCount = 40;
+static const ParameterMetaData s_metaData[s_paramCount] = {{name: "DryOut", valueType: ParameterValueType::FloatMagnitude, defaultValue: 90, knobMapping: 0, midiCCMapping: 1},
                                                            {name: "EarlyOut", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 1, midiCCMapping: 2},
-                                                           {name: "MainOut", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 2, midiCCMapping: 3},
-                                                           {name: "Time", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 3, midiCCMapping: 4},
-                                                           {name: "PreDelay", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 4, midiCCMapping: 5},
-                                                           {name: "Damp", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 5, midiCCMapping: 6},
+                                                           {name: "MainOut", valueType: ParameterValueType::FloatMagnitude, defaultValue: 90, knobMapping: 2, midiCCMapping: 3},
+                                                           {name: "Time", valueType: ParameterValueType::FloatMagnitude, defaultValue: 80, knobMapping: 3, midiCCMapping: 4},
+                                                           {name: "PreDelay", valueType: ParameterValueType::FloatMagnitude, defaultValue: 0, knobMapping: 4, midiCCMapping: 5},
+                                                           {name: "LP Filter", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 5, midiCCMapping: 6},
                                                            {name: "Preset", valueType: ParameterValueType::Binned, valueBinCount: 8, valueBinNames: s_presetNames, defaultValue: 0, knobMapping: -1, midiCCMapping: 7},
 
                                                   /*7*/         {name: "Pre HPass", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: -1, midiCCMapping: 8},
@@ -38,13 +38,13 @@ static const ParameterMetaData s_metaData[s_paramCount] = {{name: "DryOut", valu
                                                   /*11*/         {name: "TapDecay", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: -1, midiCCMapping: 12},
                                                   /*12*/         {name: "TapCount", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: -1, midiCCMapping: 13},
 
-                                                  /*13*/         {name: "PreDiffus", valueType: ParameterValueType::Bool, valueBinCount: 0, defaultValue: 1, knobMapping: -1, midiCCMapping: 14},
+                                                  /*13*/         {name: "PreDiffus", valueType: ParameterValueType::Bool, valueBinCount: 0, defaultValue: 127, knobMapping: -1, midiCCMapping: 14},
                                                   /*14*/         {name: "DiffDelay", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: -1, midiCCMapping: 15},
                                                   /*15*/         {name: "DiffFdbk", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: -1, midiCCMapping: 16},
                                                   /*16*/         {name: "LineDelay", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: -1, midiCCMapping: 17},
-                                                  /*17*/         {name: "LineDecay", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: -1, midiCCMapping: 18},
+                                                  /*17*/         {name: "InputMix", valueType: ParameterValueType::FloatMagnitude, defaultValue: 0, knobMapping: -1, midiCCMapping: 18},
 
-                                                  /*18*/         {name: "LateDiffus", valueType: ParameterValueType::Bool, valueBinCount: 0, defaultValue: 1, knobMapping: -1, midiCCMapping: 19},
+                                                  /*18*/         {name: "LateDiffus", valueType: ParameterValueType::Bool, valueBinCount: 0, defaultValue: 127, knobMapping: -1, midiCCMapping: 19},
                                                   /*19*/         {name: "LtDiffDelay", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: -1, midiCCMapping: 20},
                                                   /*20*/         {name: "LtDiffFdbk", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: -1, midiCCMapping: 21},
 
@@ -71,11 +71,11 @@ static const ParameterMetaData s_metaData[s_paramCount] = {{name: "DryOut", valu
 
                                                   /*36*/         {name: "PreDelOut", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: -1, midiCCMapping: 37},
 
-                                                  /*37*/         {name: "L StageTap", valueType: ParameterValueType::Bool, valueBinCount: 0, defaultValue: 1, knobMapping: -1, midiCCMapping: 38},
+                                                  /*37*/         {name: "L StageTap", valueType: ParameterValueType::Bool, valueBinCount: 0, defaultValue: 127, knobMapping: -1, midiCCMapping: 38},
                                                   /*38*/         {name: "Interp", valueType: ParameterValueType::Bool, valueBinCount: 0, defaultValue: 1, knobMapping: -1, midiCCMapping: 39},
                                                   
-                                                  /*39*/         {name: "Sum2Mono", valueType: ParameterValueType::Bool, valueBinCount: 0, defaultValue: 1, knobMapping: -1, midiCCMapping: 40},
-                                                  /*40*/         {name: "InputMix", valueType: ParameterValueType::FloatMagnitude, defaultValue: 0, knobMapping: -1, midiCCMapping: 41}
+                                                  /*39*/         {name: "Sum2Mono", valueType: ParameterValueType::Bool, valueBinCount: 0, defaultValue: 0, knobMapping: -1, midiCCMapping: 40}
+
 
 
 
@@ -84,10 +84,10 @@ static const ParameterMetaData s_metaData[s_paramCount] = {{name: "DryOut", valu
 // NOTES ABOUT THE CLOUDSEED PARAMETERS
 // 1. I changed the "Parameter" class to be "Parameter2" to deconflict with the DaisySP Parameter. Likely there was a much easier way to remedy this.
 // 2. I have hard coded the presets to work with the limited processing on the Daisy Seed. The main parameters that affect processing are:
-//        Mostly these:  LineCount, LateDiffusionStages      And to a lesser degree these:  DiffusionStages, TapCount (TODO Added tapcount as param, see if it can handle full range)
+//        Mostly these:  LineCount, LateDiffusionStages      And to a lesser degree these:  DiffusionStages, TapCount (Added tapcount as param, halved the full range)
 //     Increasing the above params past what I have them set at in "ReverbController.h" may freeze the pedal processing. 
 //     Currently the max stereo line count is 2 on the Daisy Seed, so the presets will sound different than the desktop CloudSeed plugin.
-//     
+
 
 
 // Default Constructor
@@ -127,7 +127,7 @@ void CloudSeedModule::Init(float sample_rate)
 
 void CloudSeedModule::ParameterChanged(int parameter_id)
 {
-    if (parameter_id == 6) {  // Preset
+    if (parameter_id == 6) {  // Preset  
         changePreset();
     } else if (parameter_id == 0) {  // DryOut
         reverb->SetParameter(::Parameter2::DryOut, GetParameterAsMagnitude(0));
@@ -138,8 +138,8 @@ void CloudSeedModule::ParameterChanged(int parameter_id)
     } else if (parameter_id == 3) {  // TimeOut
         reverb->SetParameter(::Parameter2::LineDecay, GetParameterAsMagnitude(3));
     } else if (parameter_id == 4) {  // PreDelay
-        reverb->SetParameter(::Parameter2::PreDelay, GetParameterAsMagnitude(4));
-    } else if (parameter_id == 5) {  // Damp
+        reverb->SetParameter(::Parameter2::PreDelay, GetParameterAsMagnitude(4) * 0.95); // Was freezing pedal when set to 127
+    } else if (parameter_id == 5) {  // LP Filter
         reverb->SetParameter(::Parameter2::CutoffEnabled, 1.0); // If this knob is moved, turn on the cutoff filter, the presets will reset this on/off as needed
         reverb->SetParameter(::Parameter2::PostCutoffFrequency, GetParameterAsMagnitude(5));
 
@@ -176,8 +176,8 @@ void CloudSeedModule::ParameterChanged(int parameter_id)
     } else if (parameter_id == 16) {  // LineDelay
         reverb->SetParameter(::Parameter2::LineDelay, GetParameterAsMagnitude(16));
 
-    } else if (parameter_id == 17) {  // LineDecay
-        reverb->SetParameter(::Parameter2::LineDecay, GetParameterAsMagnitude(17));
+    } else if (parameter_id == 17) {  // InputMix
+        reverb->SetParameter(::Parameter2::InputMix, GetParameterAsMagnitude(17));
 
     } else if (parameter_id == 18) {  // LateDiffusionEnabled
         reverb->SetParameter(::Parameter2::LateDiffusionEnabled, GetParameterAsMagnitude(18));
@@ -245,9 +245,7 @@ void CloudSeedModule::ParameterChanged(int parameter_id)
 
     } else if (parameter_id == 38) {  // Interpolation
         reverb->SetParameter(::Parameter2::Interpolation, GetParameterAsBool(38));
-    } else if (parameter_id == 40) {  // InputMix
-        reverb->SetParameter(::Parameter2::InputMix, GetParameterAsMagnitude(40));
-    }
+    } 
 }
 
 void CloudSeedModule::changePreset()
