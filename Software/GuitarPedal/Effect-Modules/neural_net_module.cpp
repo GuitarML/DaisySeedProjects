@@ -4,14 +4,16 @@
 
 using namespace bkshepherd;
 
-static const char* s_modelBinNames[5] = {"Klon", "Fender57", "TS9", "Bassman", "5150 amp"};
+static const char* s_modelBinNames[13] = {"Klon", "Fender57", "TS9", "Bassman", "5150 G75",
+                                          "5150 G5", "ENGLInvG5", "ENGLInvG75", "TS7 Hot", "Matchless",
+                                          "Mesa Amp", "Victory", "Ethos"};
 
 static const int s_paramCount = 5;
 static const ParameterMetaData s_metaData[s_paramCount] = {{name: "Gain", valueType: ParameterValueType::FloatMagnitude, defaultValue: 64, knobMapping: 0, midiCCMapping: 1},
                                                            {name: "Mix", valueType: ParameterValueType::FloatMagnitude, defaultValue: 64, knobMapping: 1, midiCCMapping: 2},
                                                            {name: "Level", valueType: ParameterValueType::FloatMagnitude, defaultValue: 64, knobMapping: 2, midiCCMapping: 3},
                                                            {name: "Tone", valueType: ParameterValueType::FloatMagnitude, valueBinCount: 0, defaultValue: 64, knobMapping: 3, midiCCMapping: 4},
-                                                           {name: "Model", valueType: ParameterValueType::Binned, valueBinCount: 5, valueBinNames: s_modelBinNames, defaultValue: 0, knobMapping: -1, midiCCMapping: 20},
+                                                           {name: "Model", valueType: ParameterValueType::Binned, valueBinCount: 13, valueBinNames: s_modelBinNames, defaultValue: 0, knobMapping: -1, midiCCMapping: 20},
 };
 
 RTNeural::ModelT<float, 1, 1,
