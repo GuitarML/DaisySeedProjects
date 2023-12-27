@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include "daisysp.h"
 #include "base_effect_module.h"
+#include "ImpulseResponse/ImpulseResponse.h"
 #ifdef __cplusplus
 
 /** @file ir_module.h */
@@ -27,6 +28,8 @@ class IRModule : public BaseEffectModule
     float GetBrightnessForLED(int led_id) override;
 
   private:
+
+    std::unique_ptr<dsp::ImpulseResponse> mIR;   // TODO unique ptr probably not needed on daisy
 
     float m_gainMin;
     float m_gainMax;

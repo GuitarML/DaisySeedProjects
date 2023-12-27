@@ -10,6 +10,7 @@
 
 #include "ImpulseResponse.h"
 
+/*
 dsp::ImpulseResponse::ImpulseResponse(const char* fileName, const float sampleRate)
 : mWavState(dsp::wav::LoadReturnCode::ERROR_OTHER), mSampleRate(sampleRate)
 {
@@ -24,8 +25,10 @@ dsp::ImpulseResponse::ImpulseResponse(const char* fileName, const float sampleRa
     // Set the weights based on the raw audio.
     this->_SetWeights();
 }
+*/
 
-dsp::ImpulseResponse::ImpulseResponse(const IRData& irData, const float sampleRate)
+//dsp::ImpulseResponse::ImpulseResponse(const IRData& irData, const float sampleRate)
+dsp::ImpulseResponse::ImpulseResponse(std::vector<float>& irData, const float sampleRate)
 : mWavState(dsp::wav::LoadReturnCode::SUCCESS)
 , mSampleRate(sampleRate)
 {
@@ -34,7 +37,7 @@ dsp::ImpulseResponse::ImpulseResponse(const IRData& irData, const float sampleRa
   this->_SetWeights();
 }
 
-float** dsp::ImpulseResponse::Process(float** inputs, const size_t numChannels, const size_t numFrames)
+float dsp::ImpulseResponse::Process(float inputs, const size_t numChannels, const size_t numFrames)
 {
   this->_PrepareBuffers(numChannels, numFrames);
   this->_UpdateHistory(inputs, numChannels, numFrames);
@@ -63,12 +66,12 @@ void dsp::ImpulseResponse::_SetWeights()
   else
   {
     // Cubic resampling
-    std::vector<float> padded;
-    padded.resize(this->mRawAudio.size() + 2);
-    padded[0] = 0.0f;
-    padded[padded.size() - 1] = 0.0f;
-    memcpy(padded.data() + 1, this->mRawAudio.data(), sizeof(float) * this->mRawAudio.size());
-    dsp::ResampleCubic<float>(padded, this->mRawAudioSampleRate, mSampleRate, 0.0, this->mResampled);
+    //std::vector<float> padded;
+    //padded.resize(this->mRawAudio.size() + 2);
+    //padded[0] = 0.0f;
+    //padded[padded.size() - 1] = 0.0f;
+    //memcpy(padded.data() + 1, this->mRawAudio.data(), sizeof(float) * this->mRawAudio.size());
+    //dsp::ResampleCubic<float>(padded, this->mRawAudioSampleRate, mSampleRate, 0.0, this->mResampled);
   }
   // Simple implementation w/ no resample...
   const size_t irLength = std::min(this->mResampled.size(), this->mMaxLength);

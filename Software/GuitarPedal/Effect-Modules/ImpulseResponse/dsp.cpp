@@ -30,7 +30,7 @@ void dsp::DSP::_AllocateOutputPointers(const size_t numChannels)
 {
   if (this->mOutputPointers != nullptr)
     throw std::runtime_error("Tried to re-allocate over non-null mOutputPointers");
-  this->mOutputPointers = new DSP_SAMPLE*[numChannels];
+  this->mOutputPointers = new float*[numChannels];
   if (this->mOutputPointers == nullptr)
     throw std::runtime_error("Failed to allocate pointer to output buffer!\n");
   this->mOutputPointersSize = numChannels;
@@ -48,7 +48,7 @@ void dsp::DSP::_DeallocateOutputPointers()
   this->mOutputPointersSize = 0;
 }
 
-DSP_SAMPLE** dsp::DSP::_GetPointers()
+float dsp::DSP::_GetPointers()
 {
   for (auto c = 0; c < this->_GetNumChannels(); c++)
     this->mOutputPointers[c] = this->mOutputs[c].data();
@@ -113,7 +113,7 @@ void dsp::History::_RewindHistory()
   this->mHistoryIndex = this->mHistoryRequired;
 }
 
-void dsp::History::_UpdateHistory(DSP_SAMPLE** inputs, const size_t numChannels, const size_t numFrames)
+void dsp::History::_UpdateHistory(float inputs, const size_t numChannels, const size_t numFrames)
 {
   this->_EnsureHistorySize(numFrames);
   if (numChannels < 1)

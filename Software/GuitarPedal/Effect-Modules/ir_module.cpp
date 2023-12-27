@@ -1,6 +1,7 @@
 #include "ir_module.h"
 #include "../Util/audio_utilities.h"
 #include "ImpulseResponse/ImpulseResponse.h"
+#include "ImpulseResponse/ir_data.h"
 
 using namespace bkshepherd;
 
@@ -38,11 +39,22 @@ void IRModule::Init(float sample_rate)
 {
     BaseEffectModule::Init(sample_rate);
 
+    //const auto irData = mIR->GetData();
+    mIR = std::make_unique<dsp::ImpulseResponse>(ir_data, sample_rate);  // ir_data is from ir_data.h
+
 }
 
 void IRModule::ProcessMono(float in)
 {
     BaseEffectModule::ProcessMono(in);
+
+    //sample** irPointers = toneStackOutPointers;
+    //if (mIR != nullptr && GetParam(kIRToggle)->Value())
+    //    irPointers = mIR->Process(toneStackOutPointers, numChannelsInternal, numFrames);
+    int numChannelsInternal = 1;
+    int numFrames = 1;
+
+    float irPointers = mIR->Process(m_audioLeft, numChannelsInternal, numFrames);
 
 
     m_audioLeft = m_audioLeft * GetParameterAsMagnitude(2);
