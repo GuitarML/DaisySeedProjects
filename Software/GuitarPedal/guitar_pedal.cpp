@@ -11,7 +11,7 @@
 //#include "Effect-Modules/metro_module.h"
 //#include "Effect-Modules/scope_module.h"
 //#include "Effect-Modules/crusher_module.h"
-#include "Effect-Modules/reverb_delay_module.h"
+#include "Effect-Modules/ir_module.h"
 
 #include "UI/guitar_pedal_ui.h"
 #include "Util/audio_utilities.h"
@@ -481,7 +481,7 @@ int main(void)
     //availableEffects[1] = new MetroModule();
     //availableEffects[2] = new ScopeModule();
     //availableEffects[3] = new CrusherModule();
-    availableEffects[1] = new ReverbDelayModule();
+    availableEffects[1] = new IRModule();
     
     for (int i = 0; i < availableEffectsCount; i++)
     {

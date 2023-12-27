@@ -4,3 +4,6 @@
 [submodule "Software/GuitarPedal/libDaisy"]
 	path = Software/GuitarPedal/libDaisy
 	url = https://github.com/electro-smith/libDaisy.git
+[submodule "Software/GuitarPedal/AudioDSPTools"]
+	path = Software/GuitarPedal/AudioDSPTools
+	url = https://github.com/sdatkinson/AudioDSPTools.git
