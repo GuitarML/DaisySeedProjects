@@ -29,7 +29,8 @@ class IRModule : public BaseEffectModule
 
   private:
 
-    std::unique_ptr<dsp::ImpulseResponse> mIR;   // TODO unique ptr probably not needed on daisy
+    //std::unique_ptr<dsp::ImpulseResponse> mIR;   // TODO unique ptr probably not needed on daisy
+    dsp::ImpulseResponse mIR;
 
     float m_gainMin;
     float m_gainMax;

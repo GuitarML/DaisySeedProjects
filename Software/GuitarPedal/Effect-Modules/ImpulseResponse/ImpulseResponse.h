@@ -22,10 +22,10 @@ class ImpulseResponse : public History
 public:
   struct IRData;
   //ImpulseResponse(const char* fileName, const float sampleRate);
-  //ImpulseResponse(const IRData& irData, const float sampleRate);std::vector<float>
-  ImpulseResponse(std::vector<float>& irData, const float sampleRate);
+  //ImpulseResponse(const IRData& irData, const float sampleRate)
+  ImpulseResponse(std::vector<float> irData, const float sampleRate);
   //float** Process(float** inputs, const size_t numChannels, const size_t numFrames) override;
-  float Process(float inputs, const size_t numChannels, const size_t numFrames);// override;
+  float** Process(float inputs, const size_t numChannels, const size_t numFrames);// override;
   //IRData GetData();
   float GetSampleRate() const { return mSampleRate; };
   // TODO states for the IR class

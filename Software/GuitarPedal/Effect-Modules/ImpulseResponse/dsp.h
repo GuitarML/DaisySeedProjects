@@ -26,8 +26,8 @@ class DSP
 {
 public:
   DSP();
-  //virtual ~DSP();
-  ~DSP();
+  virtual ~DSP();
+
   // The main interface for processing audio.
   // The incoming audio is given as a raw pointer-to-pointers.
   // The indexing is [channel][frame].
@@ -35,7 +35,7 @@ public:
   // This object instance will own the data referenced by the pointers and be
   // responsible for its allocation and deallocation.
   //virtual DSP_SAMPLE** Process(DSP_SAMPLE** inputs, const size_t numChannels, const size_t numFrames) = 0;
-  virtual float Process(float inputs, const size_t numChannels, const size_t numFrames) = 0;  
+  virtual float** Process(float inputs, const size_t numChannels, const size_t numFrames) = 0;  
   // Update the parameters of the DSP object according to the provided params.
   // Not declaring a pure virtual bc there's no concrete definition that can
   // use Params.

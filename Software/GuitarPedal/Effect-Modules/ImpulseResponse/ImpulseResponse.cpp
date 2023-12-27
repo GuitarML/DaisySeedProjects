@@ -6,7 +6,7 @@
 //
 
 #include "Resample.h"
-#include "wav.h"
+//#include "wav.h"
 
 #include "ImpulseResponse.h"
 
@@ -28,7 +28,7 @@ dsp::ImpulseResponse::ImpulseResponse(const char* fileName, const float sampleRa
 */
 
 //dsp::ImpulseResponse::ImpulseResponse(const IRData& irData, const float sampleRate)
-dsp::ImpulseResponse::ImpulseResponse(std::vector<float>& irData, const float sampleRate)
+dsp::ImpulseResponse::ImpulseResponse(std::vector<float> irData, const float sampleRate)
 : mWavState(dsp::wav::LoadReturnCode::SUCCESS)
 , mSampleRate(sampleRate)
 {
@@ -37,7 +37,7 @@ dsp::ImpulseResponse::ImpulseResponse(std::vector<float>& irData, const float sa
   this->_SetWeights();
 }
 
-float dsp::ImpulseResponse::Process(float inputs, const size_t numChannels, const size_t numFrames)
+float** dsp::ImpulseResponse::Process(float inputs, const size_t numChannels, const size_t numFrames)
 {
   this->_PrepareBuffers(numChannels, numFrames);
   this->_UpdateHistory(inputs, numChannels, numFrames);
@@ -48,9 +48,9 @@ float dsp::ImpulseResponse::Process(float inputs, const size_t numChannels, cons
     this->mOutputs[0][i] = (float)this->mWeight.dot(input);
   }
   // Copy out for more-than-mono.
-  for (size_t c = 1; c < numChannels; c++)
-    for (size_t i = 0; i < numFrames; i++)
-      this->mOutputs[c][i] = this->mOutputs[0][i];
+  //for (size_t c = 1; c < numChannels; c++)
+  //  for (size_t i = 0; i < numFrames; i++)
+  //    this->mOutputs[c][i] = this->mOutputs[0][i];
 
   this->_AdvanceHistoryIndex(numFrames);
   return this->_GetPointers();

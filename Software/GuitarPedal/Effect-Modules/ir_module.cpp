@@ -54,7 +54,7 @@ void IRModule::ProcessMono(float in)
     int numChannelsInternal = 1;
     int numFrames = 1;
 
-    float irPointers = mIR->Process(m_audioLeft, numChannelsInternal, numFrames);
+    float** irPointers = mIR->Process(m_audioLeft, numChannelsInternal, numFrames);
 
 
     m_audioLeft = m_audioLeft * GetParameterAsMagnitude(2);
