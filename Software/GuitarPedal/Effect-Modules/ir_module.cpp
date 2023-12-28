@@ -1,13 +1,12 @@
 #include "ir_module.h"
 #include "../Util/audio_utilities.h"
-#include "ImpulseResponse/ImpulseResponse.h"
 #include "ImpulseResponse/ir_data.h"
 
 using namespace bkshepherd;
 
 static const char* s_irNames[1] = {"test_ir"};
 
-static const int s_paramCount = 5;
+static const int s_paramCount = 3;
 static const ParameterMetaData s_metaData[s_paramCount] = {{name: "Gain", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 0, midiCCMapping: 1},
                                                            {name: "IR", valueType: ParameterValueType::Binned, valueBinCount: 1, valueBinNames: s_irNames, defaultValue: 0, knobMapping: 1, midiCCMapping: 2},
                                                            {name: "Level", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 2, midiCCMapping: 3}
@@ -15,8 +14,8 @@ static const ParameterMetaData s_metaData[s_paramCount] = {{name: "Gain", valueT
 
 // Default Constructor
 IRModule::IRModule() : BaseEffectModule(),
-                                                        m_gainMin(1.0f),
-                                                        m_gainMax(20.0f),
+                                                        m_gainMin(0.0f),
+                                                        m_gainMax(1.0f),
                                                         m_cachedEffectMagnitudeValue(1.0f)
 {
     // Set the name of the effect
@@ -40,7 +39,7 @@ void IRModule::Init(float sample_rate)
     BaseEffectModule::Init(sample_rate);
 
     //const auto irData = mIR->GetData();
-    mIR = std::make_unique<dsp::ImpulseResponse>(ir_data, sample_rate);  // ir_data is from ir_data.h
+    mIR.Init(ir_data, sample_rate);  // ir_data is from ir_data.h
 
 }
 
@@ -51,10 +50,9 @@ void IRModule::ProcessMono(float in)
     //sample** irPointers = toneStackOutPointers;
     //if (mIR != nullptr && GetParam(kIRToggle)->Value())
     //    irPointers = mIR->Process(toneStackOutPointers, numChannelsInternal, numFrames);
-    int numChannelsInternal = 1;
-    int numFrames = 1;
 
-    float** irPointers = mIR->Process(m_audioLeft, numChannelsInternal, numFrames);
+
+    m_audioLeft = mIR.Process(m_audioLeft);
 
 
     m_audioLeft = m_audioLeft * GetParameterAsMagnitude(2);

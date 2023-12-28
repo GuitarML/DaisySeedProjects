@@ -5,31 +5,28 @@
 //  Created by Steven Atkinson on 12/30/22.
 //
 // Impulse response processing
+//
+//  Modified by Keith Bloemer on 12/28/23
+//    Greatly simplified by assuming 1 channel, 1 input per Process call, and constant samplerate.
+//    For initial investigation into running IR's on the Daisy Seed
 
 #pragma once
 
-#include <filesystem>
-
+//#include <filesystem>
 #include <Eigen/Dense>
-
 #include "dsp.h"
-#include "wav.h"
 
-namespace dsp
-{
+
 class ImpulseResponse : public History
 {
 public:
-  struct IRData;
-  //ImpulseResponse(const char* fileName, const float sampleRate);
-  //ImpulseResponse(const IRData& irData, const float sampleRate)
-  ImpulseResponse(std::vector<float> irData, const float sampleRate);
-  //float** Process(float** inputs, const size_t numChannels, const size_t numFrames) override;
-  float** Process(float inputs, const size_t numChannels, const size_t numFrames);// override;
-  //IRData GetData();
-  float GetSampleRate() const { return mSampleRate; };
-  // TODO states for the IR class
-  dsp::wav::LoadReturnCode GetWavState() const { return this->mWavState; };
+  ImpulseResponse();
+  ~ImpulseResponse();
+
+  void Init(std::vector<float> irData, const float sampleRate);
+  float Process(float inputs);// override;
+  //float GetSampleRate() const { return mSampleRate; };
+
 
 private:
   // Set the weights, given that the plugin is running at the provided sample
@@ -37,12 +34,9 @@ private:
   void _SetWeights();
 
   // State of audio
-  dsp::wav::LoadReturnCode mWavState;
   // Keep a copy of the raw audio that was loaded so that it can be resampled
   std::vector<float> mRawAudio;
   float mRawAudioSampleRate;
-  // Resampled to the required sample rate.
-  std::vector<float> mResampled;
   float mSampleRate;
 
   const size_t mMaxLength = 8192;
@@ -50,10 +44,5 @@ private:
   Eigen::VectorXf mWeight;
 };
 
-struct dsp::ImpulseResponse::IRData
-{
-  std::vector<float> mRawAudio;
-  float mRawAudioSampleRate;
-};
 
-}; // namespace dsp
+

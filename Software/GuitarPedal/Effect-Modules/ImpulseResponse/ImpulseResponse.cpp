@@ -5,90 +5,71 @@
 //  Created by Steven Atkinson on 12/30/22.
 //
 
-#include "Resample.h"
-//#include "wav.h"
 
 #include "ImpulseResponse.h"
 
-/*
-dsp::ImpulseResponse::ImpulseResponse(const char* fileName, const float sampleRate)
-: mWavState(dsp::wav::LoadReturnCode::ERROR_OTHER), mSampleRate(sampleRate)
-{
-  // Try to load the WAV
-  this->mWavState = dsp::wav::Load(fileName, this->mRawAudio, this->mRawAudioSampleRate);
-  if (this->mWavState != dsp::wav::LoadReturnCode::SUCCESS)
-  {
-    std::stringstream ss;
-    ss << "Failed to load IR at " << fileName << std::endl;
-  }
-  else
-    // Set the weights based on the raw audio.
-    this->_SetWeights();
-}
-*/
 
-//dsp::ImpulseResponse::ImpulseResponse(const IRData& irData, const float sampleRate)
-dsp::ImpulseResponse::ImpulseResponse(std::vector<float> irData, const float sampleRate)
-: mWavState(dsp::wav::LoadReturnCode::SUCCESS)
-, mSampleRate(sampleRate)
+ImpulseResponse::ImpulseResponse()
 {
-  this->mRawAudio = irData.mRawAudio;
-  this->mRawAudioSampleRate = irData.mRawAudioSampleRate;
-  this->_SetWeights();
 }
 
-float** dsp::ImpulseResponse::Process(float inputs, const size_t numChannels, const size_t numFrames)
+// Destructor
+ImpulseResponse::~ImpulseResponse()
 {
-  this->_PrepareBuffers(numChannels, numFrames);
-  this->_UpdateHistory(inputs, numChannels, numFrames);
-
-  for (size_t i = 0, j = this->mHistoryIndex - this->mHistoryRequired; i < numFrames; i++, j++)
-  {
-    auto input = Eigen::Map<const Eigen::VectorXf>(&this->mHistory[j], this->mHistoryRequired + 1);
-    this->mOutputs[0][i] = (float)this->mWeight.dot(input);
-  }
-  // Copy out for more-than-mono.
-  //for (size_t c = 1; c < numChannels; c++)
-  //  for (size_t i = 0; i < numFrames; i++)
-  //    this->mOutputs[c][i] = this->mOutputs[0][i];
-
-  this->_AdvanceHistoryIndex(numFrames);
-  return this->_GetPointers();
+    // No Code Needed
 }
 
-void dsp::ImpulseResponse::_SetWeights()
+
+void ImpulseResponse::Init(std::vector<float> irData, const float sampleRate)
 {
-  if (this->mRawAudioSampleRate == mSampleRate)
-  {
-    this->mResampled.resize(this->mRawAudio.size());
-    memcpy(this->mResampled.data(), this->mRawAudio.data(), sizeof(float) * this->mResampled.size());
-  }
-  else
-  {
-    // Cubic resampling
-    //std::vector<float> padded;
-    //padded.resize(this->mRawAudio.size() + 2);
-    //padded[0] = 0.0f;
-    //padded[padded.size() - 1] = 0.0f;
-    //memcpy(padded.data() + 1, this->mRawAudio.data(), sizeof(float) * this->mRawAudio.size());
-    //dsp::ResampleCubic<float>(padded, this->mRawAudioSampleRate, mSampleRate, 0.0, this->mResampled);
-  }
-  // Simple implementation w/ no resample...
-  const size_t irLength = std::min(this->mResampled.size(), this->mMaxLength);
-  this->mWeight.resize(irLength);
+  //const size_t irLength = irData.size();
+  //.resize(irLength);
+  mRawAudio = irData;
+  mRawAudioSampleRate = sampleRate;
+  _SetWeights();
+}
+
+float ImpulseResponse::Process(float inputs)
+{
+
+  _UpdateHistory(inputs);
+
+  int j = mHistoryIndex - mHistoryRequired;
+  auto input = Eigen::Map<const Eigen::VectorXf>(&mHistory[j], mHistoryRequired + 1);
+  
+  //for (size_t i = 0, j = mHistoryIndex - mHistoryRequired; i < numFrames; i++, j++)
+  //{
+  //  auto input = Eigen::Map<const Eigen::VectorXf>(&mHistory[j], mHistoryRequired + 1);
+  //  mOutputs[0][i] = (float)mWeight.dot(input);
+  //}
+
+  _AdvanceHistoryIndex(1); // KAB MOD - for Daisy implementation numFrames is always 1
+
+  return (float)mWeight.dot(input);
+
+}
+
+void ImpulseResponse::_SetWeights()
+{
+
+  const size_t irLength = std::min(mRawAudio.size(), mMaxLength);
+  mWeight.resize(irLength);
   // Gain reduction.
   // https://github.com/sdatkinson/NeuralAmpModelerPlugin/issues/100#issuecomment-1455273839
   // Add sample rate-dependence
-  const float gain = pow(10, -18 * 0.05) * 48000 / mSampleRate;
+  //const float gain = pow(10, -18 * 0.05) * 48000 / mSampleRate;  // This made a very bad/loud sound on Daisy Seed
   for (size_t i = 0, j = irLength - 1; i < irLength; i++, j--)
-    this->mWeight[j] = gain * this->mResampled[i];
-  this->mHistoryRequired = irLength - 1;
-}
+    //mWeight[j] = gain * mRawAudio[i];  
+    mWeight[j] = mRawAudio[i];
+  mHistoryRequired = irLength - 1;
 
-dsp::ImpulseResponse::IRData dsp::ImpulseResponse::GetData()
-{
-  IRData irData;
-  irData.mRawAudio = this->mRawAudio;
-  irData.mRawAudioSampleRate = this->mRawAudioSampleRate;
-  return irData;
+  // Moved from HISTORY::EnsureHistorySize since only doing once (for testing purposes)
+  //   TODO: If this works on Daisy, find a more efficient method using indexing,
+  //         rather than copying the end of the vector (length of IR) back to the beginning all at once.
+  const size_t requiredHistoryArraySize = 5 * mHistoryRequired; // Just so we don't spend too much time copying back. // was 10 *
+  mHistory.resize(requiredHistoryArraySize);
+  std::fill(mHistory.begin(), mHistory.end(), 0.0f);
+  mHistoryIndex = mHistoryRequired; // Guaranteed to be less than
+                                                  // requiredHistoryArraySize
+
 }
