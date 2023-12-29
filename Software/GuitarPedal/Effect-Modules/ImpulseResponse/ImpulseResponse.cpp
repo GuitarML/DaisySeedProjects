@@ -56,8 +56,8 @@ void ImpulseResponse::_SetWeights()
     mWeight[j] = mRawAudio[i];
   mHistoryRequired = irLength - 1;
 
-  // Moved from HISTORY::EnsureHistorySize since only doing once for this module (using same size IR's)
-  //   TODO: If this works on Daisy, maybe find a more efficient method using indexing,
+  // Moved from HISTORY::EnsureHistorySize since only doing once for this module (assuming same size IR's)
+  //   TODO: Maybe find a more efficient method of indexing mHistory,
   //         rather than copying the end of the vector (length of IR) back to the beginning all at once.
   const size_t requiredHistoryArraySize = 5 * mHistoryRequired; // Just so we don't spend too much time copying back. // KAB NOTE: was 10 *
   mHistory.resize(requiredHistoryArraySize);

@@ -2,7 +2,6 @@
 
 #include <vector>
 
-
 // A class where a longer buffer of history is needed to correctly calculate
 // the DSP algorithm (e.g. algorithms involving convolution).
 //

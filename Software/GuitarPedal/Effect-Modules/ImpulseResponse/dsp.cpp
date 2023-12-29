@@ -37,14 +37,8 @@ void History::_RewindHistory()
 
 void History::_UpdateHistory(float inputs)
 {
-  //if (mHistoryIndex + numFrames >= mHistory.size())
   if (mHistoryIndex + 1 >= mHistory.size())
     _RewindHistory();
 
   mHistory[mHistoryIndex] = inputs;
-
-  // Grabs channel 1, drops hannel 2.
-  //for (size_t i = 0, j = mHistoryIndex; i < numFrames; i++, j++)
-    // Convert down to float here.
-    //mHistory[j] = (float)inputs[i];
 }
