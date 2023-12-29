@@ -50,7 +50,7 @@ class AmpModule : public BaseEffectModule
     float m_toneFreqMax;
 
     Tone tone;       // Low Pass
-    Balance bal;     // Balance for volume correction in filtering
+    //Balance bal;     // Balance for volume correction in filtering
 
     float m_cachedEffectMagnitudeValue;
 

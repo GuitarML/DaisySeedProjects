@@ -66,7 +66,7 @@ void AmpModule::Init(float sample_rate)
     SelectIR();
     CalculateMix();
     tone.Init(sample_rate);
-    bal.Init(sample_rate);
+    //bal.Init(sample_rate);
     CalculateTone();
 }
 
@@ -156,10 +156,10 @@ void AmpModule::ProcessMono(float in)
 
     // TONE //
     float filter_out = tone.Process(ampOut);  // Apply tone Low Pass filter
-    float balanced_out = bal.Process(filter_out, ampOut); // Apply level adjustment to increase level of filtered signal
+    //float balanced_out = bal.Process(filter_out, ampOut); // Apply level adjustment to increase level of filtered signal
 
     // MIX //
-    float mix_out = (balanced_out * wetMix) / 4.0 + input_arr[0] * dryMix; // Applies model level adjustment ("/4.0"), wet/dry mix, and output level
+    float mix_out = (filter_out * wetMix) / 4.0 + input_arr[0] * dryMix; // Applies model level adjustment ("/4.0"), wet/dry mix, and output level
  
     // IMPULSE RESPONSE //
     if (GetParameterAsBool(7))
