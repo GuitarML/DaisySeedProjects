@@ -4,3 +4,9 @@
 [submodule "Software/GuitarPedal/libDaisy"]
 	path = Software/GuitarPedal/libDaisy
 	url = https://github.com/electro-smith/libDaisy.git
+[submodule "Software/GuitarPedal/eigen"]
+	path = Software/GuitarPedal/eigen
+	url = https://gitlab.com/libeigen/eigen
+[submodule "Software/GuitarPedal/RTNeural"]
+	path = Software/GuitarPedal/RTNeural
+	url = https://github.com/jatinchowdhury18/RTNeural

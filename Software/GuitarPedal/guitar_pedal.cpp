@@ -12,7 +12,7 @@
 //#include "Effect-Modules/scope_module.h"
 //#include "Effect-Modules/crusher_module.h"
 //#include "Effect-Modules/reverb_delay_module.h"
-#include "Effect-Modules/neural_net_module.h"
+#include "Effect-Modules/amp_module.h"
 
 #include "UI/guitar_pedal_ui.h"
 #include "Util/audio_utilities.h"
@@ -483,7 +483,7 @@ int main(void)
     //availableEffects[6] = new ScopeModule();
     //availableEffects[7] = new CrusherModule();
     //availableEffects[1] = new ReverbDelayModule();
-    availableEffects[1] = new NeuralNetModule();
+    availableEffects[1] = new AmpModule();
 
     for (int i = 0; i < availableEffectsCount; i++)
     {
