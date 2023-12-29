@@ -22,18 +22,19 @@ class IRModule : public BaseEffectModule
     ~IRModule();
 
     void Init(float sample_rate) override;
+    void ParameterChanged(int parameter_id) override;
+    void SelectIR();
     void ProcessMono(float in) override;
     void ProcessStereo(float inL, float inR) override;
-    //void SetTempo(uint32_t bpm) override;
     float GetBrightnessForLED(int led_id) override;
 
   private:
 
-    //std::unique_ptr<dsp::ImpulseResponse> mIR;   // TODO unique ptr probably not needed on daisy
     ImpulseResponse mIR;
 
     float m_gainMin;
     float m_gainMax;
+    int   m_currentIRindex;
 
     float m_cachedEffectMagnitudeValue;
 };

@@ -4,18 +4,17 @@
 
 using namespace bkshepherd;
 
-static const char* s_irNames[1] = {"test_ir"};
+static const char* s_irNames[3] = {"RhythmIR", "LeadIR", "CleanIR"};
 
-static const int s_paramCount = 3;
-static const ParameterMetaData s_metaData[s_paramCount] = {{name: "Gain", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 0, midiCCMapping: 1},
-                                                           {name: "IR", valueType: ParameterValueType::Binned, valueBinCount: 1, valueBinNames: s_irNames, defaultValue: 0, knobMapping: 1, midiCCMapping: 2},
-                                                           {name: "Level", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 2, midiCCMapping: 3}
+static const int s_paramCount = 2;
+static const ParameterMetaData s_metaData[s_paramCount] = {{name: "IR", valueType: ParameterValueType::Binned, valueBinCount: 3, valueBinNames: s_irNames, defaultValue: 0, knobMapping: 0, midiCCMapping: 2},
+                                                           {name: "Level", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 1, midiCCMapping: 3}
                                                            };
 
 // Default Constructor
 IRModule::IRModule() : BaseEffectModule(),
                                                         m_gainMin(0.0f),
-                                                        m_gainMax(1.0f),
+                                                        m_gainMax(0.75f),  // Lowered gain for high ir output
                                                         m_cachedEffectMagnitudeValue(1.0f)
 {
     // Set the name of the effect
@@ -38,24 +37,32 @@ void IRModule::Init(float sample_rate)
 {
     BaseEffectModule::Init(sample_rate);
 
-    //const auto irData = mIR->GetData();
-    mIR.Init(ir_data, sample_rate);  // ir_data is from ir_data.h
+    SelectIR();
 
+}
+
+void IRModule::ParameterChanged(int parameter_id)
+{
+    if (parameter_id == 0) {  // Change Model
+        SelectIR();
+    } 
+}
+void IRModule::SelectIR()
+{
+    int irIndex = GetParameterAsBinnedValue(0) - 1;
+    if (irIndex != m_currentIRindex) {
+        mIR.Init(ir_collection[irIndex]);  // ir_data is from ir_data.h
+    }
+    m_currentIRindex = irIndex;
 }
 
 void IRModule::ProcessMono(float in)
 {
     BaseEffectModule::ProcessMono(in);
 
-    //sample** irPointers = toneStackOutPointers;
-    //if (mIR != nullptr && GetParam(kIRToggle)->Value())
-    //    irPointers = mIR->Process(toneStackOutPointers, numChannelsInternal, numFrames);
-
-
     m_audioLeft = mIR.Process(m_audioLeft);
 
-
-    m_audioLeft = m_audioLeft * GetParameterAsMagnitude(2);
+    m_audioLeft = m_audioLeft * (m_gainMin + (m_gainMax - m_gainMin) * GetParameterAsMagnitude(1));
     m_audioRight = m_audioLeft;
 }
 
@@ -71,26 +78,7 @@ void IRModule::ProcessStereo(float inL, float inR)
     //m_audioRight = m_audioRight * m_cachedEffectMagnitudeValue;
 }
 
- /*
-void ModulatedTremoloModule::SetTempo(uint32_t bpm)
-{
-    float freq = tempo_to_freq(bpm);
 
-    if (freq <= m_tremoloFreqMin)
-    {
-        SetParameterRaw(2, 0);
-    }
-    else if (freq >= m_tremoloFreqMax)
-    {
-        SetParameterRaw(2, 127);
-    }
-    else 
-    {
-        // Get the parameter as close as we can to target tempo
-        SetParameterRaw(2, ((freq - m_tremoloFreqMin) / (m_tremoloFreqMax - m_tremoloFreqMin)) * 128);
-    }
-}
-*/
 float IRModule::GetBrightnessForLED(int led_id)
 {    
     float value = BaseEffectModule::GetBrightnessForLED(led_id);

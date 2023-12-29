@@ -23,9 +23,8 @@ public:
   ImpulseResponse();
   ~ImpulseResponse();
 
-  void Init(std::vector<float> irData, const float sampleRate);
-  float Process(float inputs);// override;
-  //float GetSampleRate() const { return mSampleRate; };
+  void Init(std::vector<float> irData);
+  float Process(float inputs);
 
 
 private:
