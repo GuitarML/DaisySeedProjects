@@ -7,13 +7,12 @@
 #include "Effect-Modules/autopan_module.h"
 #include "Effect-Modules/chorus_module.h"
 #include "Effect-Modules/chopper_module.h"
-#include "Effect-Modules/reverb_module.h"
+#include "Effect-Modules/delay_module.h"
 #include "Effect-Modules/metro_module.h"
 #include "Effect-Modules/scope_module.h"
 #include "Effect-Modules/crusher_module.h"
 #include "Effect-Modules/cloudseed_module.h"
 #include "Effect-Modules/amp_module.h"
-
 #include "UI/guitar_pedal_ui.h"
 #include "Util/audio_utilities.h"
 
@@ -472,7 +471,7 @@ int main(void)
 
     // Init the Effects Modules
 
-    availableEffectsCount = 10;
+    availableEffectsCount = 11;
     availableEffects = new BaseEffectModule*[availableEffectsCount];
     availableEffects[0] = new ModulatedTremoloModule();
     availableEffects[1] = new OverdriveModule();
@@ -484,6 +483,7 @@ int main(void)
     availableEffects[7] = new CrusherModule();
     availableEffects[8] = new CloudSeedModule();
     availableEffects[9] = new AmpModule();
+    availableEffects[10] = new DelayModule();
 
     for (int i = 0; i < availableEffectsCount; i++)
     {
