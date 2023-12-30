@@ -2,15 +2,15 @@
 #include "daisysp.h"
 #include "Hardware-Modules/guitar_pedal_125b.h"
 #include "guitar_pedal_storage.h"
-//#include "Effect-Modules/modulated_tremolo_module.h"
-//#include "Effect-Modules/overdrive_module.h"
-//#include "Effect-Modules/autopan_module.h"
-//#include "Effect-Modules/chorus_module.h"
-//#include "Effect-Modules/chopper_module.h"
-//#include "Effect-Modules/reverb_module.h"
-//#include "Effect-Modules/metro_module.h"
-//#include "Effect-Modules/scope_module.h"
-//#include "Effect-Modules/crusher_module.h"
+#include "Effect-Modules/modulated_tremolo_module.h"
+#include "Effect-Modules/overdrive_module.h"
+#include "Effect-Modules/autopan_module.h"
+#include "Effect-Modules/chorus_module.h"
+#include "Effect-Modules/chopper_module.h"
+#include "Effect-Modules/reverb_module.h"
+#include "Effect-Modules/metro_module.h"
+#include "Effect-Modules/scope_module.h"
+#include "Effect-Modules/crusher_module.h"
 #include "Effect-Modules/cloudseed_module.h"
 #include "Effect-Modules/amp_module.h"
 
@@ -472,18 +472,18 @@ int main(void)
 
     // Init the Effects Modules
 
-    availableEffectsCount = 2;
+    availableEffectsCount = 10;
     availableEffects = new BaseEffectModule*[availableEffectsCount];
-    //availableEffects[0] = new ModulatedTremoloModule();
-    //availableEffects[1] = new OverdriveModule();
-    //availableEffects[2] = new AutoPanModule();
-    //availableEffects[3] = new ChorusModule();
-    //availableEffects[4] = new ChopperModule();
-    //availableEffects[5] = new MetroModule();
-    //availableEffects[6] = new ScopeModule();
-    //availableEffects[7] = new CrusherModule();
-    availableEffects[0] = new CloudSeedModule();
-    availableEffects[1] = new AmpModule();
+    availableEffects[0] = new ModulatedTremoloModule();
+    availableEffects[1] = new OverdriveModule();
+    availableEffects[2] = new AutoPanModule();
+    availableEffects[3] = new ChorusModule();
+    availableEffects[4] = new ChopperModule();
+    availableEffects[5] = new MetroModule();
+    availableEffects[6] = new ScopeModule();
+    availableEffects[7] = new CrusherModule();
+    availableEffects[8] = new CloudSeedModule();
+    availableEffects[9] = new AmpModule();
 
     for (int i = 0; i < availableEffectsCount; i++)
     {

@@ -3,7 +3,7 @@ TARGET = libcloudseed
 MODULE_DIR = .
 MODULES = \
 FastSin \
-AudioLib/Biquad \
+AudioLib/Biquad2 \
 AudioLib/ShaRandom \
 AudioLib/ValueTables \
 Utils/Sha256 \

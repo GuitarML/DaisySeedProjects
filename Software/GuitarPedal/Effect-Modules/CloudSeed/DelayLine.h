@@ -4,7 +4,7 @@
 #include "AudioLib/Lp1.h"
 #include "ModulatedDelay.h"
 #include "AllpassDiffuser.h"
-#include "AudioLib/Biquad.h"
+#include "AudioLib/Biquad2.h"
 
 using namespace AudioLib;
 
@@ -15,8 +15,8 @@ namespace CloudSeed
 	private:
 		ModulatedDelay delay;
 		AllpassDiffuser diffuser;
-		Biquad lowShelf;
-		Biquad highShelf;
+		Biquad2 lowShelf;
+		Biquad2 highShelf;
 		AudioLib::Lp1 lowPass;
 		float* tempBuffer;
 		float* mixedBuffer;
@@ -37,8 +37,8 @@ namespace CloudSeed
 			: lowPass(samplerate)
 			, delay(bufferSize, samplerate * 2, 10000) // 2 second buffer, to prevent buffer overflow with modulation and randomness added (Which may increase effective delay)
 			, diffuser(samplerate, 150) // 150ms buffer
-			, lowShelf(AudioLib::Biquad::FilterType::LowShelf, samplerate)
-			, highShelf(AudioLib::Biquad::FilterType::HighShelf, samplerate)
+			, lowShelf(AudioLib::Biquad2::FilterType::LowShelf, samplerate)
+			, highShelf(AudioLib::Biquad2::FilterType::HighShelf, samplerate)
 		{
 			this->bufferSize = bufferSize;
 			tempBuffer = new float[bufferSize];

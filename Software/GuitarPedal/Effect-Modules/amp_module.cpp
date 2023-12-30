@@ -159,14 +159,14 @@ void AmpModule::ProcessMono(float in)
     //float balanced_out = bal.Process(filter_out, ampOut); // Apply level adjustment to increase level of filtered signal
 
     // MIX //
-    float mix_out = (filter_out * wetMix) / 4.0 + input_arr[0] * dryMix; // Applies model level adjustment ("/4.0"), wet/dry mix, and output level
+    float mix_out = filter_out * wetMix + input_arr[0] * dryMix; // Applies model level adjustment ("/4.0"), wet/dry mix
  
     // IMPULSE RESPONSE //
     if (GetParameterAsBool(7))
     {
-        m_audioLeft = mIR.Process(mix_out)* GetParameterAsMagnitude(2) * 0.75;  // 0.75 is level adjust for volume increase from IR
+        m_audioLeft = mIR.Process(mix_out)* GetParameterAsMagnitude(2) * 0.2;  // 0.2 is level adjust for loud output
     } else {
-        m_audioLeft = mix_out * GetParameterAsMagnitude(2) * 0.75;
+        m_audioLeft = mix_out * GetParameterAsMagnitude(2) * 0.2;
     }
 
     m_audioRight = m_audioLeft;
