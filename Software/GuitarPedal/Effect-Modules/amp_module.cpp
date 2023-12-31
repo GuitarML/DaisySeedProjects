@@ -149,9 +149,9 @@ void AmpModule::ProcessMono(float in)
     if (GetParameterAsBool(6))
     {
         ampOut = model.forward (input_arr) + input_arr[0];   // Run Model and add Skip Connection
-        ampOut *= nnLevelAdjust;
+        ampOut *= nnLevelAdjust * 0.5; //Level adjustment
     } else {
-        ampOut = m_audioLeft;
+        ampOut = input_arr[0];
     }
 
     // TONE //
@@ -166,7 +166,7 @@ void AmpModule::ProcessMono(float in)
     {
         m_audioLeft = mIR.Process(mix_out)* GetParameterAsMagnitude(2) * 0.2;  // 0.2 is level adjust for loud output
     } else {
-        m_audioLeft = mix_out * GetParameterAsMagnitude(2) * 0.2;
+        m_audioLeft = mix_out * GetParameterAsMagnitude(2);
     }
 
     m_audioRight = m_audioLeft;
