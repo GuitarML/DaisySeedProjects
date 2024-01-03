@@ -7,12 +7,11 @@
 //#include "Effect-Modules/autopan_module.h"
 //#include "Effect-Modules/chorus_module.h"
 //#include "Effect-Modules/chopper_module.h"
-//#include "Effect-Modules/reverb_module.h"
+//#include "Effect-Modules/delay_module.h"
 //#include "Effect-Modules/metro_module.h"
 //#include "Effect-Modules/scope_module.h"
 //#include "Effect-Modules/crusher_module.h"
-#include "Effect-Modules/reverb_delay_module.h"
-
+#include "Effect-Modules/midi_keys_module.h"
 #include "UI/guitar_pedal_ui.h"
 #include "Util/audio_utilities.h"
 
@@ -413,21 +412,35 @@ void HandleMidiMessage(MidiEvent m)
     {
         case NoteOn:
         {
-            NoteOnEvent p = m.AsNoteOn();
-            char        buff[512];
-            sprintf(buff,
-                    "Note Received:\t%d\t%d\t%d\r\n",
-                    m.channel,
-                    m.data[0],
-                    m.data[1]);
-            //hareware.seed.usb_handle.TransmitInternal((uint8_t *)buff, strlen(buff));
-            // This is to avoid Max/MSP Note outs for now..
-            if(m.data[1] != 0)
+            if (activeEffect != NULL)
             {
-                p = m.AsNoteOn();
+                NoteOnEvent p = m.AsNoteOn();
+                //char        buff[512];
+                //sprintf(buff,
+                //        "Note Received:\t%d\t%d\t%d\r\n",
+                //        m.channel,
+                //        m.data[0],
+                //        m.data[1]);
+                //hareware.seed.usb_handle.TransmitInternal((uint8_t *)buff, strlen(buff));
+                // This is to avoid Max/MSP Note outs for now..
+                //if(m.data[1] != 0)
+                //{
+                //p = m.AsNoteOn();
+                activeEffect->OnNoteOn(p.note, p.velocity);
+                //}
             }
+            break;
         }
-        break;
+
+        case NoteOff:
+        {
+            if (activeEffect != NULL)
+            {
+                NoteOnEvent p = m.AsNoteOn();
+                activeEffect->OnNoteOff(p.note, p.velocity);
+            }
+            break;
+        }
         case ControlChange:
         {   
             if (activeEffect != NULL)
@@ -478,11 +491,11 @@ int main(void)
     //availableEffects[2] = new AutoPanModule();
     //availableEffects[3] = new ChorusModule();
     //availableEffects[4] = new ChopperModule();
-    //availableEffects[1] = new MetroModule();
-    //availableEffects[2] = new ScopeModule();
-    //availableEffects[3] = new CrusherModule();
-    availableEffects[1] = new ReverbDelayModule();
-    
+    //availableEffects[5] = new MetroModule();
+    //availableEffects[6] = new ScopeModule();
+    //availableEffects[7] = new CrusherModule();
+    availableEffects[1] = new MidiKeysModule();
+
     for (int i = 0; i < availableEffectsCount; i++)
     {
         availableEffects[i]->Init(sample_rate);
