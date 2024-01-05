@@ -12,9 +12,10 @@
 //#include "Effect-Modules/scope_module.h"
 //#include "Effect-Modules/crusher_module.h"
 #include "Effect-Modules/midi_keys_module.h"
-#include "Effect-Modules/key_sampler_module.h"
+//#include "Effect-Modules/key_sampler_module.h"
 #include "Effect-Modules/modal_keys_module.h"
 //#include "Effect-Modules/string_keys_module.h"
+#include "Effect-Modules/cloudyreverb_module.h"
 #include "UI/guitar_pedal_ui.h"
 #include "Util/audio_utilities.h"
 
@@ -487,7 +488,7 @@ int main(void)
 
     // Init the Effects Modules
 
-    availableEffectsCount = 4;
+    availableEffectsCount = 3;
     availableEffects = new BaseEffectModule*[availableEffectsCount];
     availableEffects[0] = new ModulatedTremoloModule();
     //availableEffects[1] = new OverdriveModule();
@@ -498,8 +499,9 @@ int main(void)
     //availableEffects[6] = new ScopeModule();
     //availableEffects[7] = new CrusherModule();
     availableEffects[1] = new MidiKeysModule();
-    availableEffects[2] = new KeySamplerModule();
-    availableEffects[3] = new ModalKeysModule();
+    //availableEffects[2] = new KeySamplerModule();
+    //availableEffects[2] = new ModalKeysModule();
+    availableEffects[2] = new CloudyReverbModule();
     //availableEffects[4] = new StringKeysModule();
 
     for (int i = 0; i < availableEffectsCount; i++)
