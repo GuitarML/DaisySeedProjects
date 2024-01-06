@@ -4,3 +4,6 @@
 [submodule "Software/GuitarPedal/libDaisy"]
 	path = Software/GuitarPedal/libDaisy
 	url = https://github.com/electro-smith/libDaisy.git
+[submodule "Software/GuitarPedal/eurorack"]
+	path = Software/GuitarPedal/eurorack
+	url = https://github.com/pichenettes/eurorack

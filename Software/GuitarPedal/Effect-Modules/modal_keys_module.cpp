@@ -17,7 +17,7 @@ static const ParameterMetaData s_metaData[s_paramCount] = {{name: "Structure", v
 ModalKeysModule::ModalKeysModule() : BaseEffectModule(),
                                                         m_freqMin(300.0f),
                                                         m_freqMax(20000.0f),
-                                                        m_verbMin(0.6f),
+                                                        m_verbMin(0.3f),
                                                         m_verbMax(1.0f),
                                                         m_cachedEffectMagnitudeValue(1.0f)
 {
@@ -94,8 +94,8 @@ void ModalKeysModule::ProcessMono(float in)
     verb.Process(voice_out, voice_out, &wetl, &wetr);
 
 
-    m_audioLeft     = (voice_out + wetl) * GetParameterAsMagnitude(2);  // Doing 50/50 mix of dry/reverb
-    m_audioRight    = (voice_out + wetr) * GetParameterAsMagnitude(2);
+    m_audioLeft     = (voice_out + wetl) * GetParameterAsMagnitude(2) * 0.1;  // Doing 50/50 mix of dry/reverb, 0.2 is volume reduction
+    m_audioRight    = (voice_out + wetr) * GetParameterAsMagnitude(2) * 0.1;
 
 }
 

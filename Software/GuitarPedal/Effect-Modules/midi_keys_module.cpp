@@ -3,10 +3,11 @@
 
 using namespace bkshepherd;
 
-static VoiceManager<12> voice_handler; // 24 or 16 was too much for 125B pedal, froze when effect engaged, 12 works
+static VoiceManager<8> voice_handler; // 24 or 16 was too much for 125B pedal, froze when effect engaged, 12 works
 
-static const int s_paramCount = 1;
-static const ParameterMetaData s_metaData[s_paramCount] = {{name: "CutoffFreq", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 0, midiCCMapping: 21}
+static const int s_paramCount = 2;
+static const ParameterMetaData s_metaData[s_paramCount] = {{name: "CutoffFreq", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 0, midiCCMapping: 21},
+                                                           {name: "Level", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 1, midiCCMapping: 22}
                                                            //{name: "Osc Wave", valueType: ParameterValueType::Binned, valueBinCount: 8, valueBinNames: s_waveBinNames, defaultValue: 0, knobMapping: 4, midiCCMapping: 23}
                                                            };
 
@@ -65,7 +66,7 @@ void MidiKeysModule::ProcessMono(float in)
     voice_handler.SetCutoff(m_freqMin + GetParameterAsMagnitude(0) * (m_freqMax -  m_freqMin));
 
     float sum        = 0.f;
-    sum        = voice_handler.Process() * 0.5f;
+    sum        = voice_handler.Process() * 0.4f * GetParameterAsMagnitude(1); // was 0.5f, needs more volume reduction
     m_audioLeft     = sum;
     m_audioRight = m_audioLeft;
 
