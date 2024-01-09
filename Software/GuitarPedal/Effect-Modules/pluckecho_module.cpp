@@ -5,19 +5,21 @@ using namespace bkshepherd;
 
 DelayLine<float, MAX_DELAY> DSY_SDRAM_BSS delay;
 
-static const int s_paramCount = 4;
+static const int s_paramCount = 6;
 static const ParameterMetaData s_metaData[s_paramCount] = {{name: "StringDecay", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 0, midiCCMapping: 22},
                                                            {name: "DelayTime", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 1, midiCCMapping: 24},
                                                            {name: "DelayFdbk", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 2, midiCCMapping: 23},
-                                                           {name: "Level", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 3, midiCCMapping: 25}
+                                                           {name: "Level", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 3, midiCCMapping: 25},
+                                                            {name: "VerbTime", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 4, midiCCMapping: 26},
+                                                           {name: "VerbFreq", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 5, midiCCMapping: 27}
                                                            };
 
 // Default Constructor
 PluckEchoModule::PluckEchoModule() : BaseEffectModule(),
-                                                        m_freqMin(300.0f),
+                                                        m_freqMin(500.0f),
                                                         m_freqMax(20000.0f),
-                                                        m_verbMin(0.3f),
-                                                        m_verbMax(1.0f),
+                                                        m_verbMin(0.5f),
+                                                        m_verbMax(0.97f), // Preventing unity gain
                                                         nn(0.0f),
                                                         trig(1.0),
                                                         m_cachedEffectMagnitudeValue(1.0f)
@@ -45,11 +47,11 @@ void PluckEchoModule::Init(float sample_rate)
     synth.Init(sample_rate);
 
     delay.Init();
-    delay.SetDelay(sample_rate * 0.8f); // half second delay
+    delay.SetDelay(sample_rate * 0.8f);
 
     verb.Init(sample_rate);
-    verb.SetFeedback(0.85f);
-    verb.SetLpFreq(2000.0f);
+    //verb.SetFeedback(0.85f);
+    //verb.SetLpFreq(2000.0f);
 }
 
 void PluckEchoModule::ParameterChanged(int parameter_id)
@@ -58,6 +60,11 @@ void PluckEchoModule::ParameterChanged(int parameter_id)
         float decay = 0.5f + GetParameterAsMagnitude(0) * 0.5f;
         synth.SetDecay(decay);
 
+    } else if (parameter_id == 4) {  
+        verb.SetFeedback(m_verbMin + GetParameterAsMagnitude(4) * (m_verbMax - m_verbMin));
+
+    } else if (parameter_id == 5) {  
+        verb.SetLpFreq(m_freqMin + (m_freqMax - m_freqMin)* GetParameterAsMagnitude(4) * GetParameterAsMagnitude(4)); // exponential frequency taper
     }
 }
 
@@ -109,13 +116,8 @@ void PluckEchoModule::ProcessMono(float in)
     verb.Process(send, send, &wetl, &wetr);
 
     // Output
-    m_audioLeft  = (dry + wetl) * GetParameterAsMagnitude(3) * 1.5;
+    m_audioLeft  = (dry + wetl) * GetParameterAsMagnitude(3) * 1.5;  // 50/50 dry wet mix and level adjust
     m_audioRight = (dry + wetr) * GetParameterAsMagnitude(3) * 1.5;
-
-
-
-    //m_audioLeft     = (voice_out + wetl) * GetParameterAsMagnitude(2) * 0.1;  // Doing 50/50 mix of dry/reverb, 0.2 is volume reduction
-    //m_audioRight    = (voice_out + wetr) * GetParameterAsMagnitude(2) * 0.1;
 
 }
 
