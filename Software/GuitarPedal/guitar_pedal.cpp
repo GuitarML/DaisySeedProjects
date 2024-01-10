@@ -14,8 +14,8 @@
 //#include "Effect-Modules/midi_keys_module.h"
 //#include "Effect-Modules/key_sampler_module.h"
 //#include "Effect-Modules/modal_keys_module.h"
-#include "Effect-Modules/pluckecho_module.h"
-//#include "Effect-Modules/midipitch_module.h"  // Not working
+//#include "Effect-Modules/pluckecho_module.h"
+#include "Effect-Modules/midipitch_module.h"  // Not working
 //#include "Effect-Modules/string_keys_module.h"
 //#include "Effect-Modules/cloudyreverb_module.h"
 #include "UI/guitar_pedal_ui.h"
@@ -503,8 +503,8 @@ int main(void)
     //availableEffects[1] = new MidiKeysModule();    // Doesnt seem to work on SRAM, runs but not triggering midi keys?, reduced polyphony to 10 to work without glitching on flash
     //availableEffects[2] = new KeySamplerModule();
     //availableEffects[2] = new ModalKeysModule();
-    availableEffects[1] = new PluckEchoModule();
-    //availableEffects[1] = new MidiPitchModule();  // freezes, why?
+    //availableEffects[1] = new PluckEchoModule();
+    availableEffects[1] = new MidiPitchModule();  // freezes, why?
     //availableEffects[2] = new CloudyReverbModule();
     //availableEffects[2] = new StringKeysModule();
 

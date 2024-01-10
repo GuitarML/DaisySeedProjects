@@ -6,7 +6,7 @@ using namespace bkshepherd;
 PitchShifter voices[3];  // Didn't work until I moved this outside the module class
 
 static const char* s_numVoices[3] = {"One", "Two", "Three"};
-static const char* s_voiceType[2] = {"PS Only", "PS Added"};
+static const char* s_voiceType[2] = {"DryOff", "DryOn"};
 
 static const int s_paramCount = 5;
 static const ParameterMetaData s_metaData[s_paramCount] = {{name: "NumVoices", valueType: ParameterValueType::Binned, valueBinCount: 3, valueBinNames: s_numVoices, defaultValue: 0, knobMapping: 0, midiCCMapping: 21},
@@ -44,15 +44,19 @@ MidiPitchModule::~MidiPitchModule()
 void MidiPitchModule::Init(float sample_rate)
 {
     BaseEffectModule::Init(sample_rate);
-
-    voices[0].Init(sample_rate);
-    voices[1].Init(sample_rate);
-    voices[2].Init(sample_rate);
+    for (int i = 0; i < maxVoices; i++ ){
+        voices[i].Init(sample_rate);
+    }
     //verb.Init(sample_rate);
-
-    //pitch.SetDelSize(1600); // 33 ms shift
-    //pitch2.SetDelSize(1600); // 33 ms shift
-    //pitch3.SetDelSize(1600); // 33 ms shift
+    for (int i = 0; i < maxVoices; i++ ){
+        env_[i].Init(sample_rate);
+        env_[i].SetSustainLevel(0.5f);
+        env_[i].SetTime(ADSR_SEG_ATTACK, 0.005f);
+        env_[i].SetTime(ADSR_SEG_DECAY, 0.005f);
+        //env_[i].SetTime(ADSR_SEG_ATTACK, 0.02f);
+        //env_[i].SetTime(ADSR_SEG_DECAY, 0.02f);
+        env_[i].SetTime(ADSR_SEG_RELEASE, 0.2f);
+    }
 }
 
 void MidiPitchModule::ParameterChanged(int parameter_id)
@@ -69,6 +73,7 @@ void MidiPitchModule::ParameterChanged(int parameter_id)
         voices[0].SetDelSize(1600 + spread_int1);
         voices[1].SetDelSize(1600 + spread_int2);
         voices[2].SetDelSize(1600 + spread_int3); 
+
     } else if (parameter_id == 0 ) {
         numVoices = GetParameterAsBinnedValue(0); // 1 to 3  // TODO If you change this in the middle of playing keys will it mess up
     }
@@ -83,12 +88,15 @@ void MidiPitchModule::OnNoteOn(float notenumber, float velocity)
     }
     else
     {
+
+
         int grabIndex = numVoices + 1;
         float trans = notenumber - 60;  // Set no tranposition to middle c
         for (int i = 0; i < numVoices; i++) {
             if (voiceKeys[i] == 0.0) {
                 voiceKeys[i] = trans;
                 grabIndex = i;
+
                 break;
             } 
         }
@@ -96,7 +104,7 @@ void MidiPitchModule::OnNoteOn(float notenumber, float velocity)
             grabIndex = 0;
             voiceKeys[0] = trans;  // Just grabbing the first voice index, TODO better way to do this by assigning the least recent voice
         }
-
+        env_gate_[grabIndex] = true;
 
         voices[grabIndex].SetTransposition(voiceKeys[grabIndex]);
 
@@ -109,10 +117,12 @@ void MidiPitchModule::OnNoteOff(float notenumber, float velocity)
     for (int i = 0; i < maxVoices; i++) { // Looping to maxVoices here in case numVoices is changed mid key
         if (voiceKeys[i] == trans) {
             voiceKeys[i] = 0.0;   // Reset pitchshift to 0.0 if the particular key is let go, freeing it up for the next key
-            voices[i].SetTransposition(0.0);
+            //voices[i].SetTransposition(0.0);
+            env_gate_[i] = false;
             break;
         } 
     }
+    
 }
 
 void MidiPitchModule::ProcessMono(float in)
@@ -121,9 +131,10 @@ void MidiPitchModule::ProcessMono(float in)
     float sum = 0.0;
     for (int i=0; i < numVoices; i++) {
         float temp = voices[i].Process(m_audioLeft); // Apply level adjustment here too
-        if (voiceKeys[i] != 0.0) {     // Only sum voices being used
-            sum += temp;
-        }
+        float amp = env_[i].Process(env_gate_[i]);
+        if(!env_[i].IsRunning())
+            voices[i].SetTransposition(voiceKeys[i]);
+        sum += temp * amp;
     }
 
     float combined = 0.0;
@@ -133,7 +144,7 @@ void MidiPitchModule::ProcessMono(float in)
         combined = sum + m_audioLeft;
     }
 
-    m_audioLeft     = combined * GetParameterAsMagnitude(2);  // Doing 50/50 mix of dry/reverb, 0.2 is volume reduction
+    m_audioLeft     = combined * GetParameterAsMagnitude(2); 
     m_audioRight    = combined * GetParameterAsMagnitude(2);
 
 }

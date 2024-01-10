@@ -50,7 +50,8 @@ class MidiPitchModule : public BaseEffectModule
     bool voicesActive[3] = {false};
     float voiceKeys[3] = {0.0};
 
-
+    Adsr       env_[3];
+    bool env_gate_[3] = {false};
 
     float m_cachedEffectMagnitudeValue;
 };
