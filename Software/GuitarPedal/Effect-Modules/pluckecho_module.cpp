@@ -64,7 +64,7 @@ void PluckEchoModule::ParameterChanged(int parameter_id)
         verb.SetFeedback(m_verbMin + GetParameterAsMagnitude(4) * (m_verbMax - m_verbMin));
 
     } else if (parameter_id == 5) {  
-        verb.SetLpFreq(m_freqMin + (m_freqMax - m_freqMin)* GetParameterAsMagnitude(4) * GetParameterAsMagnitude(4)); // exponential frequency taper
+        verb.SetLpFreq(m_freqMin + (m_freqMax - m_freqMin)* GetParameterAsMagnitude(5) * GetParameterAsMagnitude(5)); // exponential frequency taper
     }
 }
 
