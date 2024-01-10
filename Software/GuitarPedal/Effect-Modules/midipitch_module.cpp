@@ -8,18 +8,18 @@ PitchShifter voices[3];  // Didn't work until I moved this outside the module cl
 static const char* s_numVoices[3] = {"One", "Two", "Three"};
 static const char* s_voiceType[2] = {"DryOff", "DryOn"};
 
-static const int s_paramCount = 5;
+static const int s_paramCount = 6;
 static const ParameterMetaData s_metaData[s_paramCount] = {{name: "NumVoices", valueType: ParameterValueType::Binned, valueBinCount: 3, valueBinNames: s_numVoices, defaultValue: 0, knobMapping: 0, midiCCMapping: 21},
                                                            {name: "VoiceType", valueType: ParameterValueType::Binned, valueBinCount: 2, valueBinNames: s_voiceType, defaultValue: 0, knobMapping: 1, midiCCMapping: 22},
                                                            {name: "Level", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 2, midiCCMapping: 23},
                                                            {name: "PitchFun", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 3, midiCCMapping: 25},
                                                            {name: "Spread", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 4, midiCCMapping: 26},
-                                                           
+                                                           {name: "LP Filter", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 5, midiCCMapping: 27}
                                                            };
 
 // Default Constructor
 MidiPitchModule::MidiPitchModule() : BaseEffectModule(),
-                                                        m_freqMin(300.0f),
+                                                        m_freqMin(500.0f),
                                                         m_freqMax(20000.0f),
                                                         m_verbMin(0.3f),
                                                         m_verbMax(1.0f),
@@ -57,6 +57,7 @@ void MidiPitchModule::Init(float sample_rate)
         //env_[i].SetTime(ADSR_SEG_DECAY, 0.02f);
         env_[i].SetTime(ADSR_SEG_RELEASE, 0.2f);
     }
+    tone.Init(sample_rate);
 }
 
 void MidiPitchModule::ParameterChanged(int parameter_id)
@@ -76,6 +77,8 @@ void MidiPitchModule::ParameterChanged(int parameter_id)
 
     } else if (parameter_id == 0 ) {
         numVoices = GetParameterAsBinnedValue(0); // 1 to 3  // TODO If you change this in the middle of playing keys will it mess up
+    } else if (parameter_id == 5) {
+        tone.SetFreq(m_freqMin + GetParameterAsMagnitude(5) * GetParameterAsMagnitude(5) * (m_freqMax - m_freqMin)); 
     }
 }
 
@@ -143,9 +146,11 @@ void MidiPitchModule::ProcessMono(float in)
     } else { 
         combined = sum + m_audioLeft;
     }
+    // Apply LP Filter
+    float filter_out = tone.Process(combined);  // Apply tone Low Pass filter
 
-    m_audioLeft     = combined * GetParameterAsMagnitude(2); 
-    m_audioRight    = combined * GetParameterAsMagnitude(2);
+    m_audioLeft     = filter_out * GetParameterAsMagnitude(2); 
+    m_audioRight    = filter_out * GetParameterAsMagnitude(2);
 
 }
 

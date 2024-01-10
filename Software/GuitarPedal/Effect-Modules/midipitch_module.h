@@ -42,6 +42,8 @@ class MidiPitchModule : public BaseEffectModule
     int numKeys = 0;
     //ReverbSc     verb;  // Freezes if I include both Pitchshifter and ReverbSc..
 
+    Tone tone; // LP Filter
+
     float m_freqMin;
     float m_freqMax;
     float m_verbMin;

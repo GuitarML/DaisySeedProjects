@@ -15,7 +15,7 @@
 //#include "Effect-Modules/key_sampler_module.h"
 //#include "Effect-Modules/modal_keys_module.h"
 //#include "Effect-Modules/pluckecho_module.h"
-#include "Effect-Modules/midipitch_module.h"  // Not working
+#include "Effect-Modules/midipitch_module.h"  
 //#include "Effect-Modules/string_keys_module.h"
 //#include "Effect-Modules/cloudyreverb_module.h"
 #include "UI/guitar_pedal_ui.h"
