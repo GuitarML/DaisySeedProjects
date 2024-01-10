@@ -120,8 +120,9 @@ void MidiPitchModule::ProcessMono(float in)
     BaseEffectModule::ProcessMono(in); // This doesn't matter since not using input audio
     float sum = 0.0;
     for (int i=0; i < numVoices; i++) {
+        float temp = voices[i].Process(m_audioLeft); // Apply level adjustment here too
         if (voiceKeys[i] != 0.0) {     // Only sum voices being used
-            sum += voices[i].Process(m_audioLeft);
+            sum += temp;
         }
     }
 
@@ -132,8 +133,8 @@ void MidiPitchModule::ProcessMono(float in)
         combined = sum + m_audioLeft;
     }
 
-    m_audioLeft     = (combined) * GetParameterAsMagnitude(2) * 1.5;  // Doing 50/50 mix of dry/reverb, 0.2 is volume reduction
-    m_audioRight    = (combined) * GetParameterAsMagnitude(2) * 1.5;
+    m_audioLeft     = combined * GetParameterAsMagnitude(2);  // Doing 50/50 mix of dry/reverb, 0.2 is volume reduction
+    m_audioRight    = combined * GetParameterAsMagnitude(2);
 
 }
 

@@ -2,6 +2,7 @@
 
 using namespace bkshepherd;
 
+
 static const int s_paramCount = 3;
 static const ParameterMetaData s_metaData[s_paramCount] = {{name: "Time", valueType: ParameterValueType::FloatMagnitude, valueBinCount: 0, defaultValue: 57, knobMapping: 0, midiCCMapping: 1},
                                                            {name: "Damp", valueType: ParameterValueType::FloatMagnitude, valueBinCount: 0, defaultValue: 40, knobMapping: 1, midiCCMapping: 21},
