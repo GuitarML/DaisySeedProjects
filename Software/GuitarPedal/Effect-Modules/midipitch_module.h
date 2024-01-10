@@ -32,13 +32,24 @@ class MidiPitchModule : public BaseEffectModule
 
   private:
 
-    PitchShifter pitch;
-    //ReverbSc     verb;
+    int numVoices = 3;
+    int maxVoices = 3;
+    //PitchShifter voices[3];
+    //PitchShifter pitch2;
+    //PitchShifter pitch3;
+
+    float keyNums[3] = {0.0};
+    int numKeys = 0;
+    //ReverbSc     verb;  // Freezes if I include both Pitchshifter and ReverbSc..
 
     float m_freqMin;
     float m_freqMax;
     float m_verbMin;
     float m_verbMax;
+
+    bool voicesActive[3] = {false};
+    float voiceKeys[3] = {0.0};
+
 
 
     float m_cachedEffectMagnitudeValue;
