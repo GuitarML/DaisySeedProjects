@@ -3,16 +3,17 @@
 #include "Hardware-Modules/guitar_pedal_125b.h"
 #include "guitar_pedal_storage.h"
 #include "Effect-Modules/modulated_tremolo_module.h"
-#include "Effect-Modules/overdrive_module.h"
-#include "Effect-Modules/autopan_module.h"
-#include "Effect-Modules/chorus_module.h"
-#include "Effect-Modules/chopper_module.h"
-#include "Effect-Modules/delay_module.h"
-#include "Effect-Modules/metro_module.h"
-#include "Effect-Modules/scope_module.h"
-#include "Effect-Modules/crusher_module.h"
-#include "Effect-Modules/cloudseed_module.h"
-#include "Effect-Modules/amp_module.h"
+//#include "Effect-Modules/overdrive_module.h"
+//#include "Effect-Modules/autopan_module.h"
+//#include "Effect-Modules/chorus_module.h"
+//#include "Effect-Modules/chopper_module.h"
+//#include "Effect-Modules/delay_module.h"
+//#include "Effect-Modules/metro_module.h"
+//#include "Effect-Modules/scope_module.h"
+//#include "Effect-Modules/crusher_module.h"
+//#include "Effect-Modules/cloudseed_module.h"
+//#include "Effect-Modules/amp_module.h"
+#include "Effect-Modules/nam_module.h"
 #include "UI/guitar_pedal_ui.h"
 #include "Util/audio_utilities.h"
 
@@ -460,7 +461,7 @@ void HandleMidiMessage(MidiEvent m)
 int main(void)
 {
     hardware.Init();
-    hardware.SetAudioBlockSize(48);  // KAB CHANGED FROM 4, was getting too slow in processing for reverb_delay effect, TODO optimize reverb/delay better
+    hardware.SetAudioBlockSize(256);  // KAB CHANGED FROM 4, was getting too slow in processing for reverb_delay effect, TODO optimize reverb/delay better
 
     float sample_rate = hardware.AudioSampleRate();
 
@@ -471,19 +472,20 @@ int main(void)
 
     // Init the Effects Modules
 
-    availableEffectsCount = 11;
+    availableEffectsCount = 2;
     availableEffects = new BaseEffectModule*[availableEffectsCount];
     availableEffects[0] = new ModulatedTremoloModule();
-    availableEffects[1] = new OverdriveModule();
-    availableEffects[2] = new AutoPanModule();
-    availableEffects[3] = new ChorusModule();
-    availableEffects[4] = new ChopperModule();
-    availableEffects[5] = new MetroModule();
-    availableEffects[6] = new ScopeModule();
-    availableEffects[7] = new CrusherModule();
-    availableEffects[8] = new CloudSeedModule();
-    availableEffects[9] = new AmpModule();
-    availableEffects[10] = new DelayModule();
+    //availableEffects[1] = new OverdriveModule();
+    //availableEffects[2] = new AutoPanModule();
+    //availableEffects[3] = new ChorusModule();
+    //availableEffects[4] = new ChopperModule();
+    //availableEffects[5] = new MetroModule();
+    //availableEffects[6] = new ScopeModule();
+    //availableEffects[7] = new CrusherModule();
+    //availableEffects[8] = new CloudSeedModule();
+    //availableEffects[9] = new AmpModule();
+    availableEffects[1] = new NamModule();
+    //availableEffects[10] = new DelayModule();
 
     for (int i = 0; i < availableEffectsCount; i++)
     {
