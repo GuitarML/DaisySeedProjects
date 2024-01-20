@@ -11,6 +11,7 @@
 
 using namespace bkshepherd;
 using namespace nam;
+
 /*
 static const char* s_modelBinNames[14] = {"Klon", "Fender57", "TS9", "Bassman", "5150 G75",
                                           "5150 G5", "ENGLInvG5", "ENGLInvG75", "TS7 Hot", "Matchless",
@@ -93,7 +94,7 @@ void NamModule::Init(float sample_rate)
     BaseEffectModule::Init(sample_rate);
     setupNamWeights(); // in the model data .h file
     SelectModel();
-    nam::activations::Activation::enable_fast_tanh();
+    
 
 }
 
@@ -113,15 +114,16 @@ void NamModule::SelectModel()
 
         m_currentModelindex = modelIndex;
     }
+    nam::activations::Activation::enable_fast_tanh();
 
     wavenet::LayerArrayParams test1(nam_collection[0].input_size, nam_collection[0].condition_size, nam_collection[0].head_size,
                         nam_collection[0].channels, nam_collection[0].kernel_size, nam_collection[0].dilations,
                         nam_collection[0].activation, nam_collection[0].gated, nam_collection[0].head_bias);
-    wavenet::LayerArrayParams test2(nam_collection[0].input_size2, nam_collection[0].condition_size2, nam_collection[0].head_size2,
-                                nam_collection[0].channels2, nam_collection[0].kernel_size2, nam_collection[0].dilations2,
-                                nam_collection[0].activation2, nam_collection[0].gated2, nam_collection[0].head_bias2);
+    //wavenet::LayerArrayParams test2(nam_collection[0].input_size2, nam_collection[0].condition_size2, nam_collection[0].head_size2,
+    //                            nam_collection[0].channels2, nam_collection[0].kernel_size2, nam_collection[0].dilations2,
+    //                            nam_collection[0].activation2, nam_collection[0].gated2, nam_collection[0].head_bias2);
 
-    std::vector<wavenet::LayerArrayParams> layer_array_params = {test1, test2};
+    std::vector<wavenet::LayerArrayParams> layer_array_params = {test1};
     //wavenet::WaveNet namModel(layer_array_params, nam_collection[0].head_scale, nam_collection[0].with_head, nam_collection[0].weights, 48000.0);
     namModel.Init(layer_array_params, nam_collection[0].head_scale, nam_collection[0].with_head, nam_collection[0].weights, 48000.0);
 
