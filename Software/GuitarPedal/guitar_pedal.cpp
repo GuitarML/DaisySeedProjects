@@ -12,6 +12,9 @@
 #include "Effect-Modules/metro_module.h"
 #include "Effect-Modules/multi_delay_module.h"
 
+#include "Effect-Modules/delay_module.h"
+//#include "Effect-Modules/cloudseed_module.h"
+#include "Effect-Modules/amp_module.h"
 
 #include "UI/guitar_pedal_ui.h"
 #include "Util/audio_utilities.h"
@@ -475,7 +478,7 @@ int main(void)
     crossFaderTransitionTimeInSamples = hardware.GetNumberOfSamplesForTime(crossFaderTransitionTimeInSeconds);
 
     // Init the Effects Modules
-    availableEffectsCount = 8;
+    availableEffectsCount = 10;
     availableEffects = new BaseEffectModule*[availableEffectsCount];
     availableEffects[0] = new ModulatedTremoloModule();
     availableEffects[1] = new OverdriveModule();
@@ -485,7 +488,9 @@ int main(void)
     availableEffects[5] = new ReverbModule();
 	availableEffects[6] = new MultiDelayModule();
     availableEffects[7] = new MetroModule();
-
+    //availableEffects[2] = new CloudSeedModule(); // Cloudseed isn't playing nice
+    availableEffects[8] = new AmpModule();
+    availableEffects[9] = new DelayModule();
     
     for (int i = 0; i < availableEffectsCount; i++)
     {
