@@ -34,7 +34,7 @@ class ModalKeysModule : public BaseEffectModule
   private:
 
     ModalVoice   modalvoice;
-    ReverbSc     verb;
+    ReverbSc     *verb;
 
     float m_freqMin;
     float m_freqMax;

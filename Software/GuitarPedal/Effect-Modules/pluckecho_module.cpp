@@ -14,6 +14,8 @@ static const ParameterMetaData s_metaData[s_paramCount] = {{name: "StringDecay",
                                                            {name: "VerbFreq", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 5, midiCCMapping: 27}
                                                            };
 
+ReverbSc DSY_SDRAM_BSS reverbStereo3;  // Defined in reverb module
+
 // Default Constructor
 PluckEchoModule::PluckEchoModule() : BaseEffectModule(),
                                                         m_freqMin(500.0f),
@@ -48,8 +50,8 @@ void PluckEchoModule::Init(float sample_rate)
 
     delay.Init();
     delay.SetDelay(sample_rate * 0.8f);
-
-    verb.Init(sample_rate);
+    verb = &reverbStereo3;
+    verb->Init(sample_rate);
     //verb.SetFeedback(0.85f);
     //verb.SetLpFreq(2000.0f);
 }
@@ -61,10 +63,10 @@ void PluckEchoModule::ParameterChanged(int parameter_id)
         synth.SetDecay(decay);
 
     } else if (parameter_id == 4) {  
-        verb.SetFeedback(m_verbMin + GetParameterAsMagnitude(4) * (m_verbMax - m_verbMin));
+        verb->SetFeedback(m_verbMin + GetParameterAsMagnitude(4) * (m_verbMax - m_verbMin));
 
     } else if (parameter_id == 5) {  
-        verb.SetLpFreq(m_freqMin + (m_freqMax - m_freqMin)* GetParameterAsMagnitude(5) * GetParameterAsMagnitude(5)); // exponential frequency taper
+        verb->SetLpFreq(m_freqMin + (m_freqMax - m_freqMin)* GetParameterAsMagnitude(5) * GetParameterAsMagnitude(5)); // exponential frequency taper
     }
 }
 
@@ -113,7 +115,7 @@ void PluckEchoModule::ProcessMono(float in)
     float dry  = sig + delsig;
     float send = dry * 0.6f;
     float wetl, wetr;
-    verb.Process(send, send, &wetl, &wetr);
+    verb->Process(send, send, &wetl, &wetr);
 
     // Output
     m_audioLeft  = (dry + wetl) * GetParameterAsMagnitude(3) * 1.5;  // 50/50 dry wet mix and level adjust

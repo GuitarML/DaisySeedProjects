@@ -13,6 +13,8 @@ static const ParameterMetaData s_metaData[s_paramCount] = {{name: "Structure", v
                                                            {name: "VerbDamp", valueType: ParameterValueType::FloatMagnitude, defaultValue: 74, knobMapping: 5, midiCCMapping: 27}
                                                            };
 
+ReverbSc DSY_SDRAM_BSS reverbStereo2;  // Defined in reverb module
+
 // Default Constructor
 ModalKeysModule::ModalKeysModule() : BaseEffectModule(),
                                                         m_freqMin(300.0f),
@@ -42,7 +44,8 @@ void ModalKeysModule::Init(float sample_rate)
     BaseEffectModule::Init(sample_rate);
 
     modalvoice.Init(sample_rate);
-    verb.Init(sample_rate);
+    verb = &reverbStereo2;
+    verb->Init(sample_rate);
 }
 
 void ModalKeysModule::ParameterChanged(int parameter_id)
@@ -57,10 +60,10 @@ void ModalKeysModule::ParameterChanged(int parameter_id)
         modalvoice.SetDamping(GetParameterAsMagnitude(3));
 
     } else if (parameter_id == 4) { 
-        verb.SetFeedback(m_verbMin + (m_verbMax - m_verbMin) * (GetParameterAsMagnitude(4)));
+        verb->SetFeedback(m_verbMin + (m_verbMax - m_verbMin) * (GetParameterAsMagnitude(4)));
 
     } else if (parameter_id == 5) { 
-        verb.SetLpFreq(m_freqMin + (m_freqMax - m_freqMin) * (1.0 - GetParameterAsMagnitude(5) * GetParameterAsMagnitude(5)));
+        verb->SetLpFreq(m_freqMin + (m_freqMax - m_freqMin) * (1.0 - GetParameterAsMagnitude(5) * GetParameterAsMagnitude(5)));
     }
 }
 
@@ -91,7 +94,7 @@ void ModalKeysModule::ProcessMono(float in)
 
     float voice_out = modalvoice.Process();
     float wetl, wetr;
-    verb.Process(voice_out, voice_out, &wetl, &wetr);
+    verb->Process(voice_out, voice_out, &wetl, &wetr);
 
 
     m_audioLeft     = (voice_out + wetl) * GetParameterAsMagnitude(2) * 0.1;  // Doing 50/50 mix of dry/reverb, 0.2 is volume reduction

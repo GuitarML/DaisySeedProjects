@@ -38,7 +38,7 @@ class PluckEchoModule : public BaseEffectModule
     // Synthesis
     PolyPluck<NUM_VOICES> synth;
     // 10 second delay line on the external SDRAM
-    ReverbSc                                  verb;
+    ReverbSc                                  *verb;
 
     // Persistent filtered Value for smooth delay time changes.
     float smooth_time;

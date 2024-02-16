@@ -503,18 +503,18 @@ int main(void)
     availableEffects[0] = new ModulatedTremoloModule();
     availableEffects[1] = new OverdriveModule();
     availableEffects[2] = new AutoPanModule();
-	  availableEffects[3] = new ChorusModule();
-	  availableEffects[4] = new ChopperModule();
+	availableEffects[3] = new ChorusModule();
+    availableEffects[4] = new ChopperModule();
     availableEffects[5] = new ReverbModule();
     availableEffects[6] = new MultiDelayModule();
     availableEffects[7] = new MetroModule();
-    //availableEffects[2] = new CloudSeedModule(); // Cloudseed isn't playing nice
+    //availableEffects[2] = new CloudSeedModule(); // Cloudseed isn't playing nice, freezing pedal on startup
     availableEffects[8] = new AmpModule();
     availableEffects[9] = new DelayModule();
-    availableEffects[10] = new MidiKeysModule();  
-    //availableEffects[2] = new ModalKeysModule();
-    //availableEffects[1] = new PluckEchoModule();
-    //availableEffects[10] = new MidiPitchModule();
+    availableEffects[10] = new MidiKeysModule();      
+    //availableEffects[5] = new ModalKeysModule();  // Currently freezing the pedal on startup
+    //availableEffects[11] = new PluckEchoModule();  // Currently freezing the pedal on startup
+    //availableEffects[11] = new MidiPitchModule();  // 300%+ in DTCRAM, can't run until fixed
     
     for (int i = 0; i < availableEffectsCount; i++)
     {
