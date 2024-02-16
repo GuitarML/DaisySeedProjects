@@ -286,6 +286,20 @@ int BaseEffectModule::GetMappedParameterIDForMidiCC(int midiCC_id)
     return -1;
 }
 
+void BaseEffectModule::OnNoteOn(float notenumber, float velocity)
+{
+    // Triggered when a NoteOn midi message is received.
+    // Do nothing.
+    // Effect modules are expected to override this fucntion if they use a midi keyboard.
+}
+
+void BaseEffectModule::OnNoteOff(float notenumber, float velocity)
+{
+    // Triggered when a NoteOff midi message is received.
+    // Do nothing.
+    // Effect modules are expected to override this fucntion if they use a midi keyboard.
+}
+
 
 int BaseEffectModule::GetParameterMin(int parameter_id)
 {

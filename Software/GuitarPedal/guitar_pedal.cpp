@@ -4,6 +4,12 @@
 #include "guitar_pedal_storage.h"
 #include "Effect-Modules/modulated_tremolo_module.h"
 
+#include "Effect-Modules/midi_keys_module.h"
+//#include "Effect-Modules/modal_keys_module.h"
+//#include "Effect-Modules/pluckecho_module.h"
+//#include "Effect-Modules/midipitch_module.h"  
+//#include "Effect-Modules/string_keys_module.h"
+
 #include "Effect-Modules/overdrive_module.h"
 #include "Effect-Modules/autopan_module.h"
 #include "Effect-Modules/chorus_module.h"
@@ -416,21 +422,35 @@ void HandleMidiMessage(MidiEvent m)
     {
         case NoteOn:
         {
-            NoteOnEvent p = m.AsNoteOn();
-            char        buff[512];
-            sprintf(buff,
-                    "Note Received:\t%d\t%d\t%d\r\n",
-                    m.channel,
-                    m.data[0],
-                    m.data[1]);
-            //hareware.seed.usb_handle.TransmitInternal((uint8_t *)buff, strlen(buff));
-            // This is to avoid Max/MSP Note outs for now..
-            if(m.data[1] != 0)
+            if (activeEffect != NULL)
             {
-                p = m.AsNoteOn();
+                NoteOnEvent p = m.AsNoteOn();
+                //char        buff[512];
+                //sprintf(buff,
+                //        "Note Received:\t%d\t%d\t%d\r\n",
+                //        m.channel,
+                //        m.data[0],
+                //        m.data[1]);
+                //hareware.seed.usb_handle.TransmitInternal((uint8_t *)buff, strlen(buff));
+                // This is to avoid Max/MSP Note outs for now..
+                //if(m.data[1] != 0)
+                //{
+                //p = m.AsNoteOn();
+                activeEffect->OnNoteOn(p.note, p.velocity);
+                //}
             }
+            break;
         }
-        break;
+
+        case NoteOff:
+        {
+            if (activeEffect != NULL)
+            {
+                NoteOnEvent p = m.AsNoteOn();
+                activeEffect->OnNoteOff(p.note, p.velocity);
+            }
+            break;
+        }
         case ControlChange:
         {   
             if (activeEffect != NULL)
@@ -478,19 +498,23 @@ int main(void)
     crossFaderTransitionTimeInSamples = hardware.GetNumberOfSamplesForTime(crossFaderTransitionTimeInSeconds);
 
     // Init the Effects Modules
-    availableEffectsCount = 10;
+    availableEffectsCount = 11;
     availableEffects = new BaseEffectModule*[availableEffectsCount];
     availableEffects[0] = new ModulatedTremoloModule();
     availableEffects[1] = new OverdriveModule();
     availableEffects[2] = new AutoPanModule();
-	availableEffects[3] = new ChorusModule();
-	availableEffects[4] = new ChopperModule();
+	  availableEffects[3] = new ChorusModule();
+	  availableEffects[4] = new ChopperModule();
     availableEffects[5] = new ReverbModule();
-	availableEffects[6] = new MultiDelayModule();
+    availableEffects[6] = new MultiDelayModule();
     availableEffects[7] = new MetroModule();
     //availableEffects[2] = new CloudSeedModule(); // Cloudseed isn't playing nice
     availableEffects[8] = new AmpModule();
     availableEffects[9] = new DelayModule();
+    availableEffects[10] = new MidiKeysModule();  
+    //availableEffects[2] = new ModalKeysModule();
+    //availableEffects[1] = new PluckEchoModule();
+    //availableEffects[10] = new MidiPitchModule();
     
     for (int i = 0; i < availableEffectsCount; i++)
     {
