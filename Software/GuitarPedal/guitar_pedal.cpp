@@ -3,15 +3,15 @@
 #include "Hardware-Modules/guitar_pedal_125b.h"
 #include "guitar_pedal_storage.h"
 #include "Effect-Modules/modulated_tremolo_module.h"
-//#include "Effect-Modules/overdrive_module.h"
-//#include "Effect-Modules/autopan_module.h"
-//#include "Effect-Modules/chorus_module.h"
-//#include "Effect-Modules/chopper_module.h"
-//#include "Effect-Modules/reverb_module.h"
-//#include "Effect-Modules/metro_module.h"
-//#include "Effect-Modules/scope_module.h"
-//#include "Effect-Modules/crusher_module.h"
-#include "Effect-Modules/reverb_delay_module.h"
+
+#include "Effect-Modules/overdrive_module.h"
+#include "Effect-Modules/autopan_module.h"
+#include "Effect-Modules/chorus_module.h"
+#include "Effect-Modules/chopper_module.h"
+#include "Effect-Modules/reverb_module.h"
+#include "Effect-Modules/metro_module.h"
+#include "Effect-Modules/multi_delay_module.h"
+
 
 #include "UI/guitar_pedal_ui.h"
 #include "Util/audio_utilities.h"
@@ -440,6 +440,11 @@ void HandleMidiMessage(MidiEvent m)
                     activeEffect->SetParameterRaw(effectParamID, p.value);
                     guitarPedalUI.UpdateActiveEffectParameterValue(effectParamID, activeEffect->GetParameterRaw(effectParamID));
                 }
+                else
+                {
+                    // Notify the activeEffect, just in case there is custom handling for this midi cc / value
+                    activeEffect->MidiCCValueNotification(p.control_number, p.value);
+                }
             }
             break;
         }
@@ -470,18 +475,17 @@ int main(void)
     crossFaderTransitionTimeInSamples = hardware.GetNumberOfSamplesForTime(crossFaderTransitionTimeInSeconds);
 
     // Init the Effects Modules
-
-    availableEffectsCount = 2;
+    availableEffectsCount = 8;
     availableEffects = new BaseEffectModule*[availableEffectsCount];
     availableEffects[0] = new ModulatedTremoloModule();
-    //availableEffects[1] = new OverdriveModule();
-    //availableEffects[2] = new AutoPanModule();
-    //availableEffects[3] = new ChorusModule();
-    //availableEffects[4] = new ChopperModule();
-    //availableEffects[1] = new MetroModule();
-    //availableEffects[2] = new ScopeModule();
-    //availableEffects[3] = new CrusherModule();
-    availableEffects[1] = new ReverbDelayModule();
+    availableEffects[1] = new OverdriveModule();
+    availableEffects[2] = new AutoPanModule();
+	availableEffects[3] = new ChorusModule();
+	availableEffects[4] = new ChopperModule();
+    availableEffects[5] = new ReverbModule();
+	availableEffects[6] = new MultiDelayModule();
+    availableEffects[7] = new MetroModule();
+
     
     for (int i = 0; i < availableEffectsCount; i++)
     {
@@ -492,12 +496,6 @@ int main(void)
     InitPersistantStorage();
 
     Settings &settings = storage.GetSettings();
-
-    // If the stored data is not the current version do a factory reset
-    if (settings.fileFormatVersion != SETTINGS_FILE_FORMAT_VERSION)
-    {
-        storage.RestoreDefaults();
-    }
     
     // Load all the effect specific settings
     LoadEffectSettingsFromPersistantStorage();
@@ -665,13 +663,16 @@ int main(void)
         {
             if (needToSaveSettingsForActiveEffect)
             {
-                SaveEffectSettingsToPersitantStorageForEffectID(activeEffectID);
+                uint16_t tempPreset = activeEffect->GetCurrentPreset();
+                SaveEffectSettingsToPersitantStorageForEffectID(activeEffectID, tempPreset);
                 guitarPedalUI.ShowSavingSettingsScreen();
-            }
+                
 
-            storage.Save();
-            last_save_time = System::GetNow();
-            needToSaveSettingsForActiveEffect = false;
+            }
+                storage.Save();
+                last_save_time = System::GetNow();
+                needToSaveSettingsForActiveEffect = false;
+
         }
     }
 }
