@@ -1,6 +1,6 @@
 #pragma once
-#ifndef REVERBDELAY_MODULE_H
-#define REVERBDELAY_MODULE_H
+#ifndef DELAY_MODULE_H
+#define DELAY_MODULE_H
 
 #include <stdint.h>
 #include "daisysp.h"
@@ -9,7 +9,7 @@
 #include "base_effect_module.h"
 #ifdef __cplusplus
 
-/** @file reverb_delay_module.h */
+/** @file _delay_module.h */
 
 using namespace daisysp;
 
@@ -112,16 +112,15 @@ struct delay_spread
 namespace bkshepherd
 {
 
-class ReverbDelayModule : public BaseEffectModule
+class DelayModule : public BaseEffectModule
 {
   public:
-    ReverbDelayModule();
-    ~ReverbDelayModule();
+    DelayModule();
+    ~DelayModule();
 
     void Init(float sample_rate) override;
     void UpdateLEDRate();
     void CalculateDelayMix();
-    void CalculateReverbMix();
     void ParameterChanged(int parameter_id) override;
     void ProcessModulation();
     void ProcessMono(float in) override;
@@ -132,11 +131,6 @@ class ReverbDelayModule : public BaseEffectModule
 
   private:
 
-    ReverbSc m_reverbStereo;
-    float m_timeMin;
-    float m_timeMax;
-    float m_lpFreqMin;
-    float m_lpFreqMax;
     float m_delaylpFreqMin;
     float m_delaylpFreqMax;
     float m_delaySamplesMin;
@@ -150,7 +144,6 @@ class ReverbDelayModule : public BaseEffectModule
     float m_modOscFreqMin;
     float m_modOscFreqMax;
 
-
     // Delays
     delay             delayLeft;
     delay             delayRight;
@@ -159,10 +152,10 @@ class ReverbDelayModule : public BaseEffectModule
     // Mix params
     float delayWetMix = 0.5;
     float delayDryMix = 0.5;
-    float reverbWetMix = 0.5;
-    float reverbDryMix = 0.5;
+    float WetMix = 0.5;
+    float DryMix = 0.5;
 
-    float reverb_level = 1.0;
+    float _level = 1.0;
 
     float effect_samplerate;
 
