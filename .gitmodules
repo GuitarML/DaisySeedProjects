@@ -10,3 +10,6 @@
 [submodule "Software/GuitarPedal/RTNeural"]
 	path = Software/GuitarPedal/RTNeural
 	url = https://github.com/jatinchowdhury18/RTNeural
+[submodule "Software/GuitarPedal/eurorack"]
+	path = Software/GuitarPedal/eurorack
+	url = https://github.com/pichenettes/eurorack
